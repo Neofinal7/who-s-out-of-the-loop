@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+<!-- ============================================================
+     مين خارج — v0.6  RESPONSIVENESS PATCH
+     5 fixes applied to eliminate button lag on mobile & PC:
+     FIX 1: HOME_MENU_PRESS_DELAY 190ms→80ms, UI_PRESS_DELAY_TOUCH 220ms→100ms
+     FIX 2: Collapsed double-rAF in show() to single rAF
+     FIX 3: Home menu cards fire on pointerdown (not click) — kills ~100ms mobile delay
+     FIX 4: will-change:opacity,transform on .screen — GPU layer pre-promoted
+     FIX 5: touch-action:manipulation + transition .16s→.1s + fadeUp .2s→.12s
+     ============================================================ -->
+<!DOCTYPE html>
 
 <html dir="rtl" lang="ar">
 <head>

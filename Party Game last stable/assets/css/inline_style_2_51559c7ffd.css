@@ -1,0 +1,134 @@
+@font-face {
+  font-family: 'ArefRuqaa';
+  src: url(../../images/inline_style_2_c5e79f5526.bin) format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Felipa';
+  src: url(../../images/inline_style_2_67e173399d.bin) format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* ══ IMAGE ATMOSPHERES ═══════════════════════════════════════════ */
+/* River: home screen — vivid energy under dark overlay */
+#s-home::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_a561daea4e.jpeg) center/cover no-repeat;
+  opacity: 0.22;
+  filter: blur(2px) saturate(2.0);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Cheerleader: reveal screen — celebration energy */
+#s-reveal::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_e678b5f889.jpeg) center top/cover no-repeat;
+  opacity: 0.20;
+  filter: blur(2px) saturate(2.0);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Discussion: questions screen — people talking */
+#s-questions::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_7c23d5dea5.jpeg) center/cover no-repeat;
+  opacity: 0.18;
+  filter: blur(2px) saturate(1.6);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Football: voting + tally — crowd watching the verdict */
+#s-vote::before,
+#s-tally::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_3cff5eb3f0.jpeg) center/cover no-repeat;
+  opacity: 0.18;
+  filter: blur(2px) saturate(1.6);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Match over: cheerleader again — final trophy moment */
+#s-match-over::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_e678b5f889.jpeg) center/cover no-repeat;
+  opacity: 0.22;
+  filter: blur(2px) saturate(2.0);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Ensure screen content sits above image layers */
+#s-home > :not(#lang-dropdown),
+#s-reveal > *,
+#s-questions > *,
+#s-vote > *,
+#s-tally > *,
+#s-match-over > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ══ NEW IMAGE BACKGROUNDS ═══════════════════════════════════════ */
+/* Guitar (vibrant street performance) — cover + word screens */
+#s-cover::before, #s-word::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_7acd64f4ad.jpeg) center/cover no-repeat;
+  opacity: 0.18;
+  filter: blur(3px) saturate(1.8);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Board game (family playing) — setup + players screens (warmth) */
+#s-players::before, #s-setup::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_fe8e5febba.jpeg) center/cover no-repeat;
+  opacity: 0.16;
+  filter: blur(3px) saturate(1.5);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Building (grand architecture) — history + rules modal atmosphere */
+#s-history::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/inline_style_2_f0970fb5da.jpeg) center/cover no-repeat;
+  opacity: 0.14;
+  filter: blur(3px) saturate(1.4);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Dog (warm golden) — splash screen warm glow layer */
+#splash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url(../../images/inline_style_2_53bba3f4ab.jpeg) center/cover no-repeat;
+  opacity: 0.08;
+  filter: blur(8px) saturate(1.2) hue-rotate(30deg);
+  pointer-events: none;
+  z-index: 0;
+}
+/* All new screens need z-index on children */
+#s-cover > *, #s-word > *,
+#s-players > *, #s-setup > *,
+#s-history > * {
+  position: relative;
+  z-index: 1;
+}

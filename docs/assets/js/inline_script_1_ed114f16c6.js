@@ -700,8 +700,8 @@ function generateQuestions(){
 // ════════════════════════════════════════════════════════════════
 // NAVIGATION + UI UTILITIES
 // ════════════════════════════════════════════════════════════════
-// Cached once — avoids querySelectorAll layout recalc on every screen switch
-const _allScreens=document.querySelectorAll('.screen');
+// Static Array (not live NodeList) — safe to iterate while modifying classes
+const _allScreens=Array.from(document.querySelectorAll('.screen'));
 function show(id,instant){
  const el=document.getElementById(id);
  if(!el){console.error('Missing screen:',id);return;}
@@ -1969,7 +1969,6 @@ let _timerSecsLeft=10;
 function renderSpotlightQ(){
  releaseQuestionAdvanceLock();
  if(questionAdvanceRetryTimer){ clearTimeout(questionAdvanceRetryTimer); questionAdvanceRetryTimer=null; }
- // Clear any running timer first — prevents the loop
  if(_timePressureInterval){ clearInterval(_timePressureInterval); _timePressureInterval=null; }
 
  const spot=document.getElementById('q-spotlight');
@@ -1980,11 +1979,11 @@ function renderSpotlightQ(){
   </div>`;
   document.getElementById('btn-done-q').style.display='none';
   document.getElementById('btn-skip-q').style.display='none';
-  // Always surface the 'Vote!' button so the round can continue
   const _voteBtn=document.getElementById('btn-done-questions');
   if(_voteBtn) _voteBtn.style.display='flex';
   return;
  }
+
  const q=questions[currentQIdx];
  const n=players.length;
  const isBonus=q.isBonus||currentQIdx>=n;
@@ -1993,45 +1992,78 @@ function renderSpotlightQ(){
  const isWhisper=activeTwist&&activeTwist.id==='whisper_round';
  const ar=T.dir==='rtl';
 
- const progress=questions.map((_,i)=>{
-  let cls='q-dot';
-  if(i<currentQIdx) cls+=' done';
-  else if(i===currentQIdx) cls+=' active';
-  return `<div class="${cls}"></div>`;
- }).join('');
+ // Build shell once; on subsequent calls patch only dynamic nodes
+ if(!spot.querySelector('.q-spot')){
+  const r=28,circ=2*Math.PI*r;
+  spot.innerHTML=`
+   <div class="q-spot" id="q-spot-card">
+    <div id="q-timer-wrap"></div>
+    <div class="q-num" id="q-num-el"></div>
+    <div class="q-asker" id="q-asker-el"></div>
+    <div class="q-name" id="q-name-el"></div>
+    <div class="q-arrow">↓</div>
+    <div class="q-target-av" id="q-target-av-el"></div>
+    <div class="q-target-name" id="q-target-name-el"></div>
+    <div class="q-dots" id="q-dots-el"></div>
+   </div>`;
+ }
 
- // Timer ring HTML (only for time_pressure)
- const r=28, circ=2*Math.PI*r;
- const timerHtml=isTimePressure?`
-  <div class="timer-ring" id="timer-ring">
-   <svg width="70" height="70" viewBox="0 0 70 70">
-    <circle class="timer-bg" cx="35" cy="35" r="${r}" stroke-dasharray="${circ}"/>
-    <circle class="timer-fill" id="timer-arc" cx="35" cy="35" r="${r}"
-     stroke-dasharray="${circ}" stroke-dashoffset="0"/>
-   </svg>
-   <div class="timer-num" id="timer-num">10</div>
-  </div>`:'';
+ // Patch border color + shadow on card
+ const card=document.getElementById('q-spot-card');
+ if(card){
+  card.style.borderColor=isTimePressure?'var(--red)':cc;
+  card.style.boxShadow=isTimePressure?'0 8px 32px rgba(255,59,92,.2)':'';
+ }
 
- spot.innerHTML=`
-  <div class="q-spot" style="border-color:${cc};${isTimePressure?'border-color:var(--red);box-shadow:0 8px 32px rgba(255,59,92,.2);':''}">
-   ${timerHtml}
-   <div class="q-num" style="color:${cc};background:${cc}18;">
-    ${isBonus?`★ ${T.bonusLabel}`:`#${currentQIdx+1}`} / ${questions.length}
-   </div>
-   <div class="q-asker">${AVATARS[q.asker%AVATARS.length]}</div>
-   <div class="q-name">${players[q.asker]||'?'}</div>
-   <div class="q-arrow">↓</div>
-   <div class="q-target-av">${AVATARS[q.target%AVATARS.length]}</div>
-   <div class="q-target-name">${players[q.target]||'?'}</div>
-   <div class="q-dots">${progress}</div>
-  </div>`;
+ // Patch timer
+ const timerWrap=document.getElementById('q-timer-wrap');
+ if(timerWrap){
+  if(isTimePressure&&!timerWrap.querySelector('.timer-ring')){
+   const r=28,circ=2*Math.PI*r;
+   timerWrap.innerHTML=`<div class="timer-ring" id="timer-ring">
+    <svg width="70" height="70" viewBox="0 0 70 70">
+     <circle class="timer-bg" cx="35" cy="35" r="${r}" stroke-dasharray="${circ}"/>
+     <circle class="timer-fill" id="timer-arc" cx="35" cy="35" r="${r}" stroke-dasharray="${circ}" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-num" id="timer-num">10</div>
+   </div>`;
+  } else if(!isTimePressure){
+   timerWrap.innerHTML='';
+  }
+ }
+
+ // Patch text/emoji nodes directly — no innerHTML on the whole card
+ const numEl=document.getElementById('q-num-el');
+ if(numEl){ numEl.textContent=isBonus?`★ ${T.bonusLabel} / ${questions.length}`:`#${currentQIdx+1} / ${questions.length}`; numEl.style.color=cc; numEl.style.background=cc+'18'; }
+ const askerEl=document.getElementById('q-asker-el');
+ if(askerEl) askerEl.textContent=AVATARS[q.asker%AVATARS.length];
+ const nameEl=document.getElementById('q-name-el');
+ if(nameEl) nameEl.textContent=players[q.asker]||'?';
+ const targetAvEl=document.getElementById('q-target-av-el');
+ if(targetAvEl) targetAvEl.textContent=AVATARS[q.target%AVATARS.length];
+ const targetNameEl=document.getElementById('q-target-name-el');
+ if(targetNameEl) targetNameEl.textContent=players[q.target]||'?';
+
+ // Patch progress dots — only update class, don't rebuild DOM nodes unless count changed
+ const dotsEl=document.getElementById('q-dots-el');
+ if(dotsEl){
+  const dots=dotsEl.children;
+  if(dots.length!==questions.length){
+   dotsEl.innerHTML=questions.map((_,i)=>`<div class="q-dot${i<currentQIdx?' done':i===currentQIdx?' active':''}"></div>`).join('');
+  } else {
+   for(let i=0;i<dots.length;i++){
+    const d=dots[i];
+    const want=i<currentQIdx?'q-dot done':i===currentQIdx?'q-dot active':'q-dot';
+    if(d.className!==want) d.className=want;
+   }
+  }
+ }
 
  const doneBtn=document.getElementById('btn-done-q');
  const skipBtn=document.getElementById('btn-skip-q');
  doneBtn.style.display='flex';
  skipBtn.style.display='flex';
 
- // Whisper round: change done button label
  if(isWhisper){
   doneBtn.textContent=ar?'🤫 همسنا ✓':'🤫 Whispered ✓';
   doneBtn.style.background='var(--blue)';
@@ -2042,7 +2074,6 @@ function renderSpotlightQ(){
   doneBtn.style.color='';
  }
 
- // Time pressure: start 10-second countdown (skip if paused for game question)
  if(isTimePressure&&!_timerPaused){
   _timerSecsLeft=10;
   startTimerCountdown();

@@ -2054,13 +2054,13 @@ function startTimerCountdown(){
  let secs=_timerSecsLeft;
  const arc=document.getElementById('timer-arc');
  const num=document.getElementById('timer-num');
- if(num) num.textContent=secs;
+ if(num){num.textContent=secs;num.classList.remove('timer-urgent');}
  _timePressureInterval=setInterval(()=>{
   secs--;
   _timerSecsLeft=secs;
   if(num) num.textContent=secs;
   if(arc) arc.style.strokeDashoffset=((10-secs)/10)*circ;
-  if(secs<=3&&num) num.style.animation='timerPulse .5s ease-in-out infinite';
+  if(secs<=3&&num) num.classList.add('timer-urgent');
   if(secs<=0){
    clearInterval(_timePressureInterval); _timePressureInterval=null;
    _timerSecsLeft=10; // reset for next question

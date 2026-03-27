@@ -195,15 +195,15 @@ let twistsOn=true, gameQOn=true, selectedPunishment='any'; // 'any'|'truth'|'dar
 // No-repeat tracking
 let lastTopicIdx=-1, lastStoryIdx=-1;
 let homeMenuNavLock=false;
-const HOME_MENU_PRESS_DELAY=80;
+const HOME_MENU_PRESS_DELAY=190;
 let voteCastLocked=false;
 let homeMenuPressedEl=null;
 let uiPressTarget=null;
 let lastUiPressAt=0;
 let lastUiPressPointer='mouse';
 let pendingShowTimer=null;
-const UI_PRESS_DELAY_TOUCH=100;
-const UI_PRESS_DELAY_MOUSE=60;
+const UI_PRESS_DELAY_TOUCH=220;
+const UI_PRESS_DELAY_MOUSE=95;
 let uiPressClearTimer=null;
 let uiPressHoldUntil=0;
 let questionAdvanceLocked=false;
@@ -275,70 +275,17 @@ function getUiPressDelay(){
 // Cache selector strings — avoids re-parsing the CSS selector on every single touch event
 const _SEL_HOME_CARD='#s-home .menu-grid > div';
 const _SEL_PRESSABLE='button,.menu-grid > div,.vote-option,.genre-card,.btn-add-player,.tgl,.gq-choice,.punish-opt,.guess-opt';
-
-// FIX 3 (scroll-safe): On touch/pen, schedule navigation after a short delay on pointerdown
-// but CANCEL it if the finger moves more than SCROLL_SLOP pixels — that means the user
-// is scrolling, not tapping. This gives instant-feeling nav without accidental triggers.
-const SCROLL_SLOP=8; // px of movement that counts as "started scrolling"
-let _pendingNavTimer=null;
-let _pendingNavDownX=0;
-let _pendingNavDownY=0;
-let _navAlreadyFired=false;
-
-function _cancelPendingNav(){
- if(_pendingNavTimer){ clearTimeout(_pendingNavTimer); _pendingNavTimer=null; }
- _navAlreadyFired=false;
-}
-
 document.addEventListener('pointerdown',function(e){
- _cancelPendingNav();
  const card=e.target.closest(_SEL_HOME_CARD);
  if(card) markHomeMenuPressed(card);
  const pressable=e.target.closest(_SEL_PRESSABLE);
  if(pressable) markUiPress(pressable,e.pointerType);
-
- if((e.pointerType==='touch'||e.pointerType==='pen')&&card){
-  const fn=card.getAttribute('onclick');
-  if(fn){
-   _pendingNavDownX=e.clientX;
-   _pendingNavDownY=e.clientY;
-   // Fire after a brief delay — long enough for a scroll to reveal itself via pointermove,
-   // short enough that a deliberate tap feels instant (under perception threshold ~80ms).
-   _pendingNavTimer=setTimeout(()=>{
-    _pendingNavTimer=null;
-    _navAlreadyFired=true;
-    try{ (new Function(fn))(); }catch(_){}
-   },60);
-  }
- }
 });
-
-document.addEventListener('pointermove',function(e){
- if(!_pendingNavTimer) return;
- const dx=Math.abs(e.clientX-_pendingNavDownX);
- const dy=Math.abs(e.clientY-_pendingNavDownY);
- if(dx>SCROLL_SLOP||dy>SCROLL_SLOP){
-  // Finger drifted — user is scrolling, kill the pending nav and release the press visual
-  _cancelPendingNav();
-  clearHomeMenuPressed();
-  clearUiPress();
- }
-},{passive:true});
-
-// Prevent the click from double-firing if pointerdown already triggered nav
-document.addEventListener('click',function(e){
- if(_navAlreadyFired){
-  const card=e.target.closest(_SEL_HOME_CARD);
-  if(card){ e.stopImmediatePropagation(); _navAlreadyFired=false; return; }
- }
- _navAlreadyFired=false;
-},{capture:true});
-
 document.addEventListener('pointerup',()=>{ clearUiPressAfterMin(); });
-document.addEventListener('pointercancel',()=>{ _cancelPendingNav(); clearHomeMenuPressed(); clearUiPressAfterMin(); });
+document.addEventListener('pointercancel',()=>{ clearUiPressAfterMin(); });
 document.addEventListener('pointerleave',()=>{ clearUiPressAfterMin(); });
-window.addEventListener('blur',()=>{ _cancelPendingNav(); clearUiPress(); });
-document.addEventListener('visibilitychange',()=>{ if(document.hidden){ _cancelPendingNav(); clearUiPress(); } });
+window.addEventListener('blur',()=>{ clearUiPress(); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) clearUiPress(); });
 
 // Per-round scores
 let roundScores={};
@@ -764,7 +711,8 @@ function show(id,instant){
   requestAnimationFrame(()=>{
    _allScreens.forEach(s=>s.classList.remove('active'));
    el.classList.add('active');
-   window.scrollTo(0,0);
+   // scrollTo causes layout — defer it one more frame after paint
+   requestAnimationFrame(()=>window.scrollTo(0,0));
   });
  };
  if(instant){

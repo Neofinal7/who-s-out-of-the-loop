@@ -195,7 +195,7 @@ let twistsOn=true, gameQOn=true, selectedPunishment='any'; // 'any'|'truth'|'dar
 // No-repeat tracking
 let lastTopicIdx=-1, lastStoryIdx=-1;
 let homeMenuNavLock=false;
-const HOME_MENU_PRESS_DELAY=190;
+const HOME_MENU_PRESS_DELAY=0;
 let voteCastLocked=false;
 let homeMenuPressedEl=null;
 let uiPressTarget=null;

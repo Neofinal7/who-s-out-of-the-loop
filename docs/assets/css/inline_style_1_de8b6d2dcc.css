@@ -118,14 +118,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
  top:0;left:0;right:0;
  min-height:100%;
  pointer-events:none;
- /* No will-change here — avoid promoting every screen to a GPU layer */
+ /* FIX 4: Pre-promote to GPU layer so the incoming animation never composites from scratch */
+ will-change:opacity,transform;
 }
 .screen.active{
  visibility:visible;
  opacity:1;
  position:relative;
  pointer-events:auto;
- animation:fadeUp .2s ease both;
+ /* FIX 5: 120ms feels instant yet still gives a polished entrance; 200ms was noticeably slow */
+ animation:fadeUp .12s ease both;
  transform:translateZ(0);
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
@@ -155,7 +157,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .lang-opt{padding:13px 18px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:10px;color:var(--text);}
 .lang-opt:hover{background:var(--surface3);}
 .lang-opt.active{color:var(--blue);}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 20px;border-radius:var(--rs);font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:transform .14s;border:1px solid rgba(255,255,255,.14);width:100%;letter-spacing:.5px;position:relative;overflow:hidden;box-shadow:var(--depth-mid);}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 20px;border-radius:var(--rs);font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:transform .1s;border:1px solid rgba(255,255,255,.14);width:100%;letter-spacing:.5px;position:relative;overflow:hidden;box-shadow:var(--depth-mid);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 .btn::before{content:'';position:absolute;inset:1px;border-radius:calc(var(--rs) - 1px);background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 38%);pointer-events:none;}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.15) 45%,transparent 62%);transform:translateX(-110%);pointer-events:none;}
 .btn:active{transform:translateY(2px) scale(.98);}
@@ -172,7 +174,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .btn-yellow{background:linear-gradient(155deg,#fff29b 0%,var(--yellow) 40%,#cb8f1c 100%);color:#1a1000;box-shadow:0 12px 26px rgba(255,214,0,.4),0 3px 0 rgba(120,88,16,.86);font-weight:900;}
 .btn-row{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:auto;padding-top:16px;}
 .toggle-row{display:flex;gap:9px;}
-.tgl{flex:1;padding:13px 8px;background:linear-gradient(160deg,var(--surface2),var(--surface3));border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);transition:transform .14s;text-align:center;box-shadow:var(--depth-soft);}
+.tgl{flex:1;padding:13px 8px;background:linear-gradient(160deg,var(--surface2),var(--surface3));border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);transition:transform .1s;text-align:center;box-shadow:var(--depth-soft);touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .tgl:active{transform:translateY(2px) scale(.98);box-shadow:var(--press-shadow);}
 .tgl.sel{border-color:var(--blue);background:linear-gradient(160deg,rgba(68,138,255,.32),rgba(25,69,145,.45));color:var(--blueL);box-shadow:0 10px 22px rgba(68,138,255,.26),0 3px 0 rgba(22,58,120,.8);}
 .tgl.sel-pink{border-color:var(--pink);background:rgba(255,61,154,.15);color:var(--pinkL);box-shadow:0 0 16px rgba(255,61,154,.25);}
@@ -550,7 +552,15 @@ button,.btn,.tgl,.menu-card,.genre-card,.vote-option,.gq-choice,.punish-opt,.gue
   position:relative;
   border-radius:var(--r);
   box-shadow:var(--depth-mid);
-  transition:transform .16s;
+  /* FIX 5: drop from .16s → .1s so the press-down visual snaps immediately */
+  transition:transform .1s;
+  /* FIX 5: tells the browser this element handles its own taps — removes the 300ms
+     double-tap-to-zoom delay that mobile Safari/Chrome insert before firing click */
+  touch-action:manipulation;
+  /* Eliminate the grey flash on tap that makes interactions feel unresponsive */
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
 }
 .menu-grid > div::after{
   content:'';

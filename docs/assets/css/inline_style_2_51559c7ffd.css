@@ -31,7 +31,7 @@
   inset: 0;
   background: url(../../images/html_asset_a561daea4e.jpeg) center/cover no-repeat;
   opacity: 0.22;
-  filter: blur(2px) saturate(2.0);
+  filter: saturate(2.0);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -43,7 +43,7 @@
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center top/cover no-repeat;
   opacity: 0.20;
-  filter: blur(2px) saturate(2.0);
+  filter: saturate(2.0);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -55,7 +55,7 @@
   inset: 0;
   background: url(../../images/html_asset_7c23d5dea5.jpeg) center/cover no-repeat;
   opacity: 0.18;
-  filter: blur(2px) saturate(1.6);
+  filter: saturate(1.6);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -68,7 +68,7 @@
   inset: 0;
   background: url(../../images/html_asset_3cff5eb3f0.jpeg) center/cover no-repeat;
   opacity: 0.18;
-  filter: blur(2px) saturate(1.6);
+  filter: saturate(1.6);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -80,7 +80,7 @@
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center/cover no-repeat;
   opacity: 0.22;
-  filter: blur(2px) saturate(2.0);
+  filter: saturate(2.0);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -104,7 +104,7 @@
   inset: 0;
   background: url(../../images/html_asset_7acd64f4ad.jpeg) center/cover no-repeat;
   opacity: 0.18;
-  filter: blur(3px) saturate(1.8);
+  filter: saturate(1.8);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -116,7 +116,7 @@
   inset: 0;
   background: url(../../images/html_asset_fe8e5febba.jpeg) center/cover no-repeat;
   opacity: 0.16;
-  filter: blur(3px) saturate(1.5);
+  filter: saturate(1.5);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -128,7 +128,7 @@
   inset: 0;
   background: url(../../images/inline_style_2_f0970fb5da.jpeg) center/cover no-repeat;
   opacity: 0.14;
-  filter: blur(3px) saturate(1.4);
+  filter: saturate(1.4);
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
@@ -140,7 +140,7 @@
   inset: 0;
   background: url(../../images/inline_style_2_53bba3f4ab.jpeg) center/cover no-repeat;
   opacity: 0.08;
-  filter: blur(8px) saturate(1.2) hue-rotate(30deg);
+  filter: saturate(1.2) hue-rotate(30deg);
   pointer-events: none;
   z-index: 0;
   transform: translateZ(0);

@@ -706,10 +706,12 @@ function show(id,instant){
  const el=document.getElementById(id);
  if(!el){console.error('Missing screen:',id);return;}
  const doShow=()=>{
+  el.style.willChange='transform';
   requestAnimationFrame(()=>{
    _allScreens.forEach(s=>s.classList.remove('active'));
    el.classList.add('active');
-   el.scrollTop=0;
+   window.scrollTo(0,0);
+   el.addEventListener('animationend',()=>{ el.style.willChange='auto'; },{once:true});
   });
  };
  if(instant){

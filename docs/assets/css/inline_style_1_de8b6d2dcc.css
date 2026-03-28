@@ -124,7 +124,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
  position:relative;
  pointer-events:auto;
  animation:fadeUp .2s ease both;
- will-change:transform;
 }
 @keyframes fadeUp{from{transform:translateY(14px);}to{transform:translateY(0);}}
 @keyframes pop{from{transform:scale(.4);opacity:0;}to{transform:scale(1);opacity:1;}}

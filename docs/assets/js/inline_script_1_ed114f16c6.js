@@ -709,8 +709,7 @@ function show(id,instant){
   requestAnimationFrame(()=>{
    _allScreens.forEach(s=>s.classList.remove('active'));
    el.classList.add('active');
-   window.scrollTo(0,0);
-   el.addEventListener('animationend',()=>{ el.style.willChange='auto'; },{once:true});
+   el.scrollTop=0;
   });
  };
  if(instant){

@@ -12,61 +12,78 @@
 }
 
 /* ══ IMAGE ATMOSPHERES ═══════════════════════════════════════════ */
-/* River: home screen — vivid energy under dark overlay */
+/*
+ * FIX: Changed position:fixed → position:absolute on all ::before backgrounds.
+ * Fixed-position filtered elements are compositor layers that cover the entire
+ * viewport — every screen transition forced a full-viewport repaint of all of
+ * them simultaneously. Absolute positioning scopes each layer to its own screen,
+ * so only the newly active screen's background needs to be composited.
+ *
+ * Also added transform:translateZ(0) to promote each layer to its own GPU tile,
+ * so the blur+saturate filter is rasterized once and reused rather than repainted
+ * on every frame during the fadeUp entry animation.
+ */
+
+/* River: home screen */
 #s-home::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/html_asset_a561daea4e.jpeg) center/cover no-repeat;
   opacity: 0.22;
   filter: blur(2px) saturate(2.0);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
-/* Cheerleader: reveal screen — celebration energy */
+/* Cheerleader: reveal screen */
 #s-reveal::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center top/cover no-repeat;
   opacity: 0.20;
   filter: blur(2px) saturate(2.0);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
-/* Discussion: questions screen — people talking */
+/* Discussion: questions screen */
 #s-questions::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/html_asset_7c23d5dea5.jpeg) center/cover no-repeat;
   opacity: 0.18;
   filter: blur(2px) saturate(1.6);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
-/* Football: voting + tally — crowd watching the verdict */
+/* Football: voting + tally */
 #s-vote::before,
 #s-tally::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/html_asset_3cff5eb3f0.jpeg) center/cover no-repeat;
   opacity: 0.18;
   filter: blur(2px) saturate(1.6);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
-/* Match over: cheerleader again — final trophy moment */
+/* Match over */
 #s-match-over::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center/cover no-repeat;
   opacity: 0.22;
   filter: blur(2px) saturate(2.0);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
 /* Ensure screen content sits above image layers */
 #s-home > :not(#lang-dropdown),
@@ -79,42 +96,44 @@
   z-index: 1;
 }
 
-
 /* ══ NEW IMAGE BACKGROUNDS ═══════════════════════════════════════ */
-/* Guitar (vibrant street performance) — cover + word screens */
+/* Guitar: cover + word screens */
 #s-cover::before, #s-word::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/html_asset_7acd64f4ad.jpeg) center/cover no-repeat;
   opacity: 0.18;
   filter: blur(3px) saturate(1.8);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
-/* Board game (family playing) — setup + players screens (warmth) */
+/* Board game: setup + players screens */
 #s-players::before, #s-setup::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/html_asset_fe8e5febba.jpeg) center/cover no-repeat;
   opacity: 0.16;
   filter: blur(3px) saturate(1.5);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
-/* Building (grand architecture) — history + rules modal atmosphere */
+/* Building: history screen */
 #s-history::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: url(../../images/inline_style_2_f0970fb5da.jpeg) center/cover no-repeat;
   opacity: 0.14;
   filter: blur(3px) saturate(1.4);
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
 }
-/* Dog (warm golden) — splash screen warm glow layer */
+/* Dog: splash screen warm glow layer */
 #splash::after {
   content: '';
   position: absolute;
@@ -124,6 +143,7 @@
   filter: blur(8px) saturate(1.2) hue-rotate(30deg);
   pointer-events: none;
   z-index: 0;
+  transform: translateZ(0);
 }
 /* All new screens need z-index on children */
 #s-cover > *, #s-word > *,

@@ -710,6 +710,7 @@ function show(id,instant){
    _allScreens.forEach(s=>s.classList.remove('active'));
    el.classList.add('active');
    window.scrollTo(0,0);
+   el.addEventListener('animationend',()=>{ el.style.willChange='auto'; },{once:true});
   });
  };
  if(instant){

@@ -106,7 +106,7 @@ button{
 }
 @keyframes bfloat{from{transform:translate(0,0) scale(1);}to{transform:translate(16px,12px) scale(1.07);}}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03;background-image:url(../../images/inline_style_1_ef967fe654.svg);background-size:200px;transform:translateZ(0);contain:strict;}
-.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;height:100vh;height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden;}
+.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden;}
 .screen{
  display:flex;flex-direction:column;flex:1;
  padding:calc(16px + var(--safe-top)) 20px calc(20px + var(--safe-bot));
@@ -121,9 +121,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .screen.active{
  visibility:visible;
  opacity:1;
- position:absolute;
- bottom:0;
- z-index:1;
+ position:relative;
  pointer-events:auto;
  animation:fadeUp .2s ease both;
 }
@@ -568,6 +566,10 @@ button,.btn,.tgl,.menu-card,.genre-card,.vote-option,.gq-choice,.punish-opt,.gue
 /* Override inline transition:all .2s on menu cards — transition:all catches layout reflows and causes flicker */
 .menu-grid > div{
   transition:transform .16s!important;
+}
+/* Image banner strips inside screens must never be squished by flex layout */
+.screen > div[style*="overflow:hidden"][style*="border-radius"]{
+  flex-shrink:0;
 }
 .menu-grid > div.menu-pressing{
   transform:translateY(2px) scale(.99) !important;

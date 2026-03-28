@@ -106,7 +106,7 @@ button{
 }
 @keyframes bfloat{from{transform:translate(0,0) scale(1);}to{transform:translate(16px,12px) scale(1.07);}}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03;background-image:url(../../images/inline_style_1_ef967fe654.svg);background-size:200px;transform:translateZ(0);contain:strict;}
-.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden;}
+.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;height:100vh;height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden;}
 .screen{
  display:flex;flex-direction:column;flex:1;
  padding:calc(16px + var(--safe-top)) 20px calc(20px + var(--safe-bot));
@@ -121,11 +121,15 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .screen.active{
  visibility:visible;
  opacity:1;
- position:relative;
+ position:absolute;
+ bottom:0;
+ z-index:1;
  pointer-events:auto;
  animation:fadeUp .2s ease both;
 }
 @keyframes fadeUp{from{transform:translateY(14px);}to{transform:translateY(0);}}
+/* Pause all animations on hidden screens — prevents optionsPulse and others from consuming GPU while invisible */
+.screen:not(.active) *{animation-play-state:paused!important;}
 @keyframes pop{from{transform:scale(.4);opacity:0;}to{transform:scale(1);opacity:1;}}
 @keyframes popIn{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
 @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
@@ -560,6 +564,10 @@ button,.btn,.tgl,.menu-card,.genre-card,.vote-option,.gq-choice,.punish-opt,.gue
 .menu-grid > div:active{
   transform:translateY(2px) scale(.99);
   box-shadow:var(--press-shadow);
+}
+/* Override inline transition:all .2s on menu cards — transition:all catches layout reflows and causes flicker */
+.menu-grid > div{
+  transition:transform .16s!important;
 }
 .menu-grid > div.menu-pressing{
   transform:translateY(2px) scale(.99) !important;

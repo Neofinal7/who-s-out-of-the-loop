@@ -11,59 +11,155 @@
   font-style: normal;
 }
 
-/* ══ FIXED BACKGROUND (NO CUTOFF) ═══════════════════════════════ */
+/* ══ IMAGE ATMOSPHERES ═══════════════════════════════════════════
+ *
+ * WHY position:fixed (not :absolute)?
+ * ------------------------------------
+ * .screen has `contain:layout style paint`.
+ * `contain:paint` makes .screen the containing block for position:fixed
+ * children — so fixed here means "fixed relative to .screen", NOT the
+ * full viewport. That scopes it exactly as tightly as absolute would,
+ * with one crucial difference: position:fixed does NOT scroll when the
+ * screen's overflow-y:auto content scrolls. position:absolute DOES
+ * scroll with the content, which is what caused the solid-color strip
+ * at the bottom on any screen with overflowing content (Reveal,
+ * Match Over, History, etc.).
+ *
+ * The old comment in this file said "absolute is better for perf
+ * because fixed = full-viewport compositor layer". That was written
+ * before contain:paint was added to .screen. With containment in place,
+ * fixed is scoped to .screen — same GPU tile, no extra cost.
+ *
+ * transform:translateZ(0) stays to ensure immediate GPU promotion.
+ * ══════════════════════════════════════════════════════════════════ */
 
-/* Base background behavior for all screens */
-#s-home,
-#s-reveal,
-#s-questions,
-#s-vote,
-#s-tally,
-#s-match-over,
-#s-cover,
-#s-word,
-#s-players,
-#s-setup,
-#s-history {
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+/* River: home screen */
+#s-home::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_a561daea4e.jpeg) center/cover no-repeat;
+  opacity: 0.22;
+  filter: saturate(2.0);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+/* Cheerleader: reveal screen */
+#s-reveal::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_e678b5f889.jpeg) center top/cover no-repeat;
+  opacity: 0.20;
+  filter: saturate(2.0);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+/* Discussion: questions screen */
+#s-questions::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_7c23d5dea5.jpeg) center/cover no-repeat;
+  opacity: 0.18;
+  filter: saturate(1.6);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+/* Football: voting + tally */
+#s-vote::before,
+#s-tally::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_3cff5eb3f0.jpeg) center/cover no-repeat;
+  opacity: 0.18;
+  filter: saturate(1.6);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+/* Match over */
+#s-match-over::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_e678b5f889.jpeg) center/cover no-repeat;
+  opacity: 0.22;
+  filter: saturate(2.0);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+/* Ensure screen content sits above image layers */
+#s-home > :not(#lang-dropdown),
+#s-reveal > *,
+#s-questions > *,
+#s-vote > *,
+#s-tally > *,
+#s-match-over > * {
+  position: relative;
+  z-index: 1;
 }
 
-/* Individual images */
-#s-home {
-  background-image: url(../../images/html_asset_a561daea4e.jpeg);
+/* ══ NEW IMAGE BACKGROUNDS ═══════════════════════════════════════ */
+/* Guitar: cover + word screens */
+#s-cover::before, #s-word::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_7acd64f4ad.jpeg) center/cover no-repeat;
+  opacity: 0.18;
+  filter: saturate(1.8);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
 }
-
-#s-reveal {
-  background-image: url(../../images/html_asset_e678b5f889.jpeg);
+/* Board game: setup + players screens */
+#s-players::before, #s-setup::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/html_asset_fe8e5febba.jpeg) center/cover no-repeat;
+  opacity: 0.16;
+  filter: saturate(1.5);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
 }
-
-#s-questions {
-  background-image: url(../../images/html_asset_7c23d5dea5.jpeg);
+/* Building: history screen */
+#s-history::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/inline_style_2_f0970fb5da.jpeg) center/cover no-repeat;
+  opacity: 0.14;
+  filter: saturate(1.4);
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
 }
-
-#s-vote,
-#s-tally {
-  background-image: url(../../images/html_asset_3cff5eb3f0.jpeg);
+/* Dog: splash screen warm glow layer */
+#splash::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(../../images/inline_style_2_53bba3f4ab.jpeg) center/cover no-repeat;
+  opacity: 0.08;
+  filter: saturate(1.2) hue-rotate(30deg);
+  pointer-events: none;
+  z-index: 0;
+  transform: translateZ(0);
 }
-
-#s-match-over {
-  background-image: url(../../images/html_asset_e678b5f889.jpeg);
-}
-
-#s-cover,
-#s-word {
-  background-image: url(../../images/html_asset_7acd64f4ad.jpeg);
-}
-
-#s-players,
-#s-setup {
-  background-image: url(../../images/html_asset_fe8e5febba.jpeg);
-}
-
-#s-history {
-  background-image: url(../../images/inline_style_2_f0970fb5da.jpeg);
+/* All new screens need z-index on children */
+#s-cover > *, #s-word > *,
+#s-players > *, #s-setup > *,
+#s-history > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ══ MOBILE: strip the filter for performance ════════════════════

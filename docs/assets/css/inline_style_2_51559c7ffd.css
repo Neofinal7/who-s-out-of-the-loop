@@ -182,3 +182,8 @@
     filter: none;
   }
 }
+
+#s-home, #s-reveal, #s-questions, #s-vote, #s-tally, #s-match-over, #s-cover, #s-word, #s-players, #s-setup, #s-history {
+  contain: paint !important;
+  overflow-y: auto !important;
+}

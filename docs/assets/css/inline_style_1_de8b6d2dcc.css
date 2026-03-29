@@ -109,7 +109,7 @@ button{
 }
 @keyframes bfloat{from{transform:translate(0,0) scale(1);}to{transform:translate(16px,12px) scale(1.07);}}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03;background-image:url(../../images/inline_style_1_ef967fe654.svg);background-size:200px;transform:translateZ(0);contain:strict;}
-.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden;contain:layout;}
+.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden;contain:layout;}
 .screen{
  display:flex;flex-direction:column;flex:1;
  padding:calc(16px + var(--safe-top)) 20px calc(20px + var(--safe-bot));

@@ -36,7 +36,7 @@
 /* River: home screen */
 #s-home::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_a561daea4e.jpeg) center/cover no-repeat;
   opacity: 0.22;
@@ -48,7 +48,7 @@
 /* Cheerleader: reveal screen */
 #s-reveal::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center top/cover no-repeat;
   opacity: 0.20;
@@ -60,7 +60,7 @@
 /* Discussion: questions screen */
 #s-questions::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_7c23d5dea5.jpeg) center/cover no-repeat;
   opacity: 0.18;
@@ -73,7 +73,7 @@
 #s-vote::before,
 #s-tally::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_3cff5eb3f0.jpeg) center/cover no-repeat;
   opacity: 0.18;
@@ -85,7 +85,7 @@
 /* Match over */
 #s-match-over::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center/cover no-repeat;
   opacity: 0.22;
@@ -109,7 +109,7 @@
 /* Guitar: cover + word screens */
 #s-cover::before, #s-word::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_7acd64f4ad.jpeg) center/cover no-repeat;
   opacity: 0.18;
@@ -121,7 +121,7 @@
 /* Board game: setup + players screens */
 #s-players::before, #s-setup::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_fe8e5febba.jpeg) center/cover no-repeat;
   opacity: 0.16;
@@ -133,7 +133,7 @@
 /* Building: history screen */
 #s-history::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/inline_style_2_f0970fb5da.jpeg) center/cover no-repeat;
   opacity: 0.14;
@@ -145,7 +145,7 @@
 /* Dog: splash screen warm glow layer */
 #splash::after {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/inline_style_2_53bba3f4ab.jpeg) center/cover no-repeat;
   opacity: 0.08;

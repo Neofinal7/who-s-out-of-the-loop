@@ -152,6 +152,27 @@
   position: relative;
   z-index: 1;
 }
+/* ══ BG IMAGE SCROLL FIX ══════════════════════════════════════════════════════
+   .screen.active has overflow-y:auto — position:absolute ::before scrolls with
+   content and leaves viewport bottom showing plain --bg color.
+   Fix: position:fixed makes ::before relative to .app (contain:layout anchors it)
+   so it always covers the full .app area regardless of scroll position.
+   Desktop keeps position:absolute (no scroll overflow issue there + filter works).
+   ══════════════════════════════════════════════════════════════════════════════ */
 @media (hover:none){
-  #s-home::before,#s-reveal::before,#s-questions::before,#s-vote::before,#s-tally::before,#s-match-over::before,#s-cover::before,#s-word::before,#s-players::before,#s-setup::before,#s-history::before,#splash::after{filter:none;}
+  #s-home::before,
+  #s-reveal::before,
+  #s-questions::before,
+  #s-vote::before,
+  #s-tally::before,
+  #s-match-over::before,
+  #s-cover::before,
+  #s-word::before,
+  #s-players::before,
+  #s-setup::before,
+  #s-history::before,
+  #splash::after {
+    position: fixed;
+    filter: none;
+  }
 }

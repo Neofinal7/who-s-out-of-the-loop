@@ -702,13 +702,18 @@ function generateQuestions(){
 // ════════════════════════════════════════════════════════════════
 // Static Array (not live NodeList) — safe to iterate while modifying classes
 const _allScreens=Array.from(document.querySelectorAll('.screen'));
+// Track the currently visible screen — lets show() remove active from just ONE screen
+// instead of iterating and invalidating all N screens on every transition.
+let _activeScreen=document.querySelector('.screen.active');
 function show(id,instant){
  const el=document.getElementById(id);
  if(!el){console.error('Missing screen:',id);return;}
  const doShow=()=>{
   el.style.willChange='transform';
   requestAnimationFrame(()=>{
-   _allScreens.forEach(s=>s.classList.remove('active'));
+   // Remove active from the outgoing screen only — 1 style recalc instead of N
+   if(_activeScreen && _activeScreen!==el) _activeScreen.classList.remove('active');
+   _activeScreen=el;
    el.classList.add('active');
    window.scrollTo(0,0);
    el.addEventListener('animationend',()=>{ el.style.willChange='auto'; },{once:true});

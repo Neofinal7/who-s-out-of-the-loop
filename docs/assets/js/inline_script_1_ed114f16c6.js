@@ -715,7 +715,7 @@ function show(id,instant){
    if(_activeScreen && _activeScreen!==el) _activeScreen.classList.remove('active');
    _activeScreen=el;
    el.classList.add('active');
-   window.scrollTo(0,0);
+   el.scrollTop=0;
    el.addEventListener('animationend',()=>{ el.style.willChange='auto'; },{once:true});
   });
  };

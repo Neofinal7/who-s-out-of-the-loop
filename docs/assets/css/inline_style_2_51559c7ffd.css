@@ -11,23 +11,32 @@
   font-style: normal;
 }
 
-/* ══ IMAGE ATMOSPHERES ═══════════════════════════════════════════ */
-/*
- * FIX: Changed position:fixed → position:absolute on all ::before backgrounds.
- * Fixed-position filtered elements are compositor layers that cover the entire
- * viewport — every screen transition forced a full-viewport repaint of all of
- * them simultaneously. Absolute positioning scopes each layer to its own screen,
- * so only the newly active screen's background needs to be composited.
+/* ══ IMAGE ATMOSPHERES ═══════════════════════════════════════════
  *
- * Also added transform:translateZ(0) to promote each layer to its own GPU tile,
- * so the blur+saturate filter is rasterized once and reused rather than repainted
- * on every frame during the fadeUp entry animation.
- */
+ * WHY position:fixed (not :absolute)?
+ * ------------------------------------
+ * .screen has `contain:layout style paint`.
+ * `contain:paint` makes .screen the containing block for position:fixed
+ * children — so fixed here means "fixed relative to .screen", NOT the
+ * full viewport. That scopes it exactly as tightly as absolute would,
+ * with one crucial difference: position:fixed does NOT scroll when the
+ * screen's overflow-y:auto content scrolls. position:absolute DOES
+ * scroll with the content, which is what caused the solid-color strip
+ * at the bottom on any screen with overflowing content (Reveal,
+ * Match Over, History, etc.).
+ *
+ * The old comment in this file said "absolute is better for perf
+ * because fixed = full-viewport compositor layer". That was written
+ * before contain:paint was added to .screen. With containment in place,
+ * fixed is scoped to .screen — same GPU tile, no extra cost.
+ *
+ * transform:translateZ(0) stays to ensure immediate GPU promotion.
+ * ══════════════════════════════════════════════════════════════════ */
 
 /* River: home screen */
 #s-home::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_a561daea4e.jpeg) center/cover no-repeat;
   opacity: 0.22;
@@ -39,7 +48,7 @@
 /* Cheerleader: reveal screen */
 #s-reveal::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center top/cover no-repeat;
   opacity: 0.20;
@@ -51,7 +60,7 @@
 /* Discussion: questions screen */
 #s-questions::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_7c23d5dea5.jpeg) center/cover no-repeat;
   opacity: 0.18;
@@ -64,7 +73,7 @@
 #s-vote::before,
 #s-tally::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_3cff5eb3f0.jpeg) center/cover no-repeat;
   opacity: 0.18;
@@ -76,7 +85,7 @@
 /* Match over */
 #s-match-over::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_e678b5f889.jpeg) center/cover no-repeat;
   opacity: 0.22;
@@ -100,7 +109,7 @@
 /* Guitar: cover + word screens */
 #s-cover::before, #s-word::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_7acd64f4ad.jpeg) center/cover no-repeat;
   opacity: 0.18;
@@ -112,7 +121,7 @@
 /* Board game: setup + players screens */
 #s-players::before, #s-setup::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/html_asset_fe8e5febba.jpeg) center/cover no-repeat;
   opacity: 0.16;
@@ -124,7 +133,7 @@
 /* Building: history screen */
 #s-history::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/inline_style_2_f0970fb5da.jpeg) center/cover no-repeat;
   opacity: 0.14;
@@ -136,7 +145,7 @@
 /* Dog: splash screen warm glow layer */
 #splash::after {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: url(../../images/inline_style_2_53bba3f4ab.jpeg) center/cover no-repeat;
   opacity: 0.08;
@@ -152,13 +161,11 @@
   position: relative;
   z-index: 1;
 }
-/* ══ BG IMAGE SCROLL FIX ══════════════════════════════════════════════════════
-   .screen.active has overflow-y:auto — position:absolute ::before scrolls with
-   content and leaves viewport bottom showing plain --bg color.
-   Fix: position:fixed makes ::before relative to .app (contain:layout anchors it)
-   so it always covers the full .app area regardless of scroll position.
-   Desktop keeps position:absolute (no scroll overflow issue there + filter works).
-   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ══ MOBILE: strip the filter for performance ════════════════════
+   position:fixed is now the default for all devices above.
+   On mobile we only need to remove the filter (GPU cost).
+   ══════════════════════════════════════════════════════════════════ */
 @media (hover:none){
   #s-home::before,
   #s-reveal::before,
@@ -172,7 +179,6 @@
   #s-setup::before,
   #s-history::before,
   #splash::after {
-    position: fixed;
     filter: none;
   }
 }

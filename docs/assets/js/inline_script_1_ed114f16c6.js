@@ -708,35 +708,12 @@ let _activeScreen=document.querySelector('.screen.active');
 function show(id,instant){
  const el=document.getElementById(id);
  if(!el){console.error('Missing screen:',id);return;}
- const doShow=()=>{
-  el.style.willChange='transform';
-  requestAnimationFrame(()=>{
-   // Remove active from the outgoing screen only — 1 style recalc instead of N
-   if(_activeScreen && _activeScreen!==el) _activeScreen.classList.remove('active');
-   _activeScreen=el;
-   el.classList.add('active');
-   el.scrollTop=0;
-   el.addEventListener('animationend',()=>{ el.style.willChange='auto'; },{once:true});
-  });
- };
- if(instant){
-  if(pendingShowTimer){ clearTimeout(pendingShowTimer); pendingShowTimer=null; }
-  clearUiPress();
-  doShow();
-  return;
- }
- const recentPress=(Date.now()-lastUiPressAt)<=260;
- if(recentPress){
-  if(pendingShowTimer) clearTimeout(pendingShowTimer);
-  pendingShowTimer=setTimeout(()=>{
-   pendingShowTimer=null;
-   clearUiPress();
-   doShow();
-  }, getUiPressDelay());
-  return;
- }
+ if(pendingShowTimer){ clearTimeout(pendingShowTimer); pendingShowTimer=null; }
  clearUiPress();
- doShow();
+ if(_activeScreen && _activeScreen!==el) _activeScreen.classList.remove('active');
+ el.scrollTop=0;
+ _activeScreen=el;
+ el.classList.add('active');
 }
 function closeModal(id,e){if(e.target===document.getElementById(id))closeModalDirect(id);}
 function closeModalDirect(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');}
@@ -746,55 +723,36 @@ function openRulesModal(){
  playSound('tap'); haptic('light');
  if(homeMenuNavLock) return;
  homeMenuNavLock=true;
- if(!homeMenuPressedEl){
-  markHomeMenuPressed(document.querySelector('#s-home .menu-grid > div[onclick*="openRulesModal"]'));
- }
- setTimeout(()=>{
-  clearUiPress();
-  clearHomeMenuPressed();
-  renderRulesModal();
-  document.getElementById('rules-modal').classList.remove('hidden');
-  homeMenuNavLock=false;
- }, HOME_MENU_PRESS_DELAY);
+ clearUiPress();
+ clearHomeMenuPressed();
+ renderRulesModal();
+ document.getElementById('rules-modal').classList.remove('hidden');
+ homeMenuNavLock=false;
 }
 function showHistory(){
  haptic('light');
  if(homeMenuNavLock) return;
  homeMenuNavLock=true;
- if(!homeMenuPressedEl){
-  markHomeMenuPressed(document.querySelector('#s-home .menu-grid > div[onclick*="showHistory"]'));
- }
- setTimeout(()=>{
-  clearUiPress();
-  clearHomeMenuPressed();
-  show('s-history');
-  requestAnimationFrame(()=>renderHistory());
-  homeMenuNavLock=false;
- }, HOME_MENU_PRESS_DELAY);
+ clearUiPress();
+ clearHomeMenuPressed();
+ show('s-history');
+ renderHistory();
+ homeMenuNavLock=false;
 }
 function goToPlayerSetup(mode){
  haptic('light'); playSound('tap');
  if(homeMenuNavLock) return;
  homeMenuNavLock=true;
- if(!homeMenuPressedEl){
-  const sel=mode==='story'
-   ? "#s-home .menu-grid > div[onclick*=\"goToPlayerSetup('story')\"]"
-   : "#s-home .menu-grid > div[onclick*=\"goToPlayerSetup('normal')\"]";
-  markHomeMenuPressed(document.querySelector(sel));
+ clearUiPress();
+ clearHomeMenuPressed();
+ gameMode=mode||'normal';
+ if(mode==='story'){
+  selectedGenre='story';
+  genreMode='pick';
  }
- setTimeout(()=>{
-  clearUiPress();
-  clearHomeMenuPressed();
-  gameMode=mode||'normal';
-  // If story mode, pre-select story genre for when they get to setup
-  if(mode==='story'){
-   selectedGenre='story';
-   genreMode='pick';
-  }
-  show('s-players');
-  requestAnimationFrame(()=>rebuildPlayerGrid(false));
-  homeMenuNavLock=false;
- }, HOME_MENU_PRESS_DELAY);
+ show('s-players');
+ rebuildPlayerGrid(false);
+ homeMenuNavLock=false;
 }
 function toggleLangMenu(){
  const dd=document.getElementById('lang-dropdown');

@@ -5,12 +5,9 @@
 //          haptics, animations, PWA setup, splash + init
 // ════════════════════════════════════════════════════════════════
 
-// ── markUiPress / clearUiPress override ─────────────────────────
+// ── markUiPress / clearUiPress stubs ────────────────────────────
 // The new pointer-based animation system handles visuals automatically.
-// These stubs keep any callers happy without double-animating.
-var pendingShowTimer=null;
-var homeMenuNavLock=false;
-var lastUiPressPointer='touch';
+// These override whatever was declared in data.js — callers still work.
 function markUiPress(el,type){ /* handled by pointerdown system */ }
 function clearUiPress(){ /* no-op — new system self-cleans */ }
 function clearHomeMenuPressed(){ /* no-op */ }

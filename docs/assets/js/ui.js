@@ -4,6 +4,17 @@
 //          render helpers (options, rules, genres), audio engine,
 //          haptics, animations, PWA setup, splash + init
 // ════════════════════════════════════════════════════════════════
+
+// ── markUiPress / clearUiPress override ─────────────────────────
+// The new pointer-based animation system handles visuals automatically.
+// These stubs keep any callers happy without double-animating.
+var pendingShowTimer=null;
+var homeMenuNavLock=false;
+var lastUiPressPointer='touch';
+function markUiPress(el,type){ /* handled by pointerdown system */ }
+function clearUiPress(){ /* no-op — new system self-cleans */ }
+function clearHomeMenuPressed(){ /* no-op */ }
+
 // ════════════════════════════════════════════════════════════════
 // NAVIGATION + UI UTILITIES
 // ════════════════════════════════════════════════════════════════
@@ -466,16 +477,26 @@ function generateIcon(size){
  ctx2.fillText('🕵️',size/2,size/2+size*.03);
  return canvas.toDataURL('image/png');
 }
-const MANIFEST={name:'مين خارج اللعبة',short_name:'مين خارج',display:'standalone',
- orientation:'portrait',background_color:'#ff5e99',theme_color:'#ff5e99',lang:'ar',dir:'rtl',
- icons:[{src:generateIcon(192),sizes:'192x192',type:'image/png',purpose:'any maskable'},
-        {src:generateIcon(512),sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
-const mBlob=new Blob([JSON.stringify(MANIFEST)],{type:'application/json'});
-document.getElementById('pwa-manifest').href=URL.createObjectURL(mBlob);
-
-if('serviceWorker' in navigator){
- const SW=`const C='mkg-v8';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/'])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>r)));});`;
- navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});
+// PWA manifest + SW registration deferred to after first paint —
+// avoids blocking the main thread (canvas draws + blob URL creation) during startup.
+function _initPWA(){
+ const MANIFEST={name:'مين خارج اللعبة',short_name:'مين خارج',display:'standalone',
+  orientation:'portrait',background_color:'#ff5e99',theme_color:'#ff5e99',lang:'ar',dir:'rtl',
+  icons:[{src:generateIcon(192),sizes:'192x192',type:'image/png',purpose:'any maskable'},
+         {src:generateIcon(512),sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+ const mBlob=new Blob([JSON.stringify(MANIFEST)],{type:'application/json'});
+ const ml=document.getElementById('pwa-manifest');
+ if(ml) ml.href=URL.createObjectURL(mBlob);
+ if('serviceWorker' in navigator){
+  const SW=`const C='mkg-v8';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/'])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>r)));});`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});
+ }
+}
+// Defer until after the first render frame so the splash paints instantly
+if(document.readyState==='loading'){
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(_initPWA,0));
+} else {
+ setTimeout(_initPWA,0);
 }
 
 let _dip=null;
@@ -504,29 +525,90 @@ window.addEventListener('appinstalled',()=>{document.getElementById('install-ban
 // ════════════════════════════════════════════════════════════════
 // SPLASH + CLOSE LANG MENU ON OUTSIDE CLICK
 // ════════════════════════════════════════════════════════════════
-window.addEventListener('load',()=>{
- const min=new Promise(r=>setTimeout(r,1400));
- min.then(()=>{
-  const s=document.getElementById('splash');
-  s.classList.add('hide');
-  setTimeout(()=>s.remove(),600);
- });
-});
+// Use double-rAF to detect first paint, then start the splash timer
+// from that moment — not from when all resources finish loading.
+// This eliminates the blank-screen lag before the splash appears.
+(function(){
+ let _paintTime=0;
+ function _afterFirstPaint(){
+  _paintTime=performance.now();
+  // Heavy init runs after splash is already visible on screen
+  rebuildPlayerGrid(false);
+  applyTranslations();
+  // Dismiss splash after 1400 ms from first paint (minimum feel-good delay)
+  const _remaining=Math.max(0, 1400-( performance.now()-_paintTime ));
+  setTimeout(()=>{
+   const s=document.getElementById('splash');
+   if(!s) return;
+   s.classList.add('hide');
+   setTimeout(()=>{ if(s.parentNode) s.parentNode.removeChild(s); },600);
+  }, _remaining);
+ }
+ // Double rAF = first callback is before paint, second is after
+ requestAnimationFrame(()=>requestAnimationFrame(_afterFirstPaint));
+})();
 // lang dropdown click handling moved to toggleLangMenu block above
 
 // ════════════════════════════════════════════════════════════════
-// INIT
+// CLICK ANIMATION SYSTEM — GPU-composited, zero-delay, noticeable
 // ════════════════════════════════════════════════════════════════
-// Defer heavy init work until after first paint — keeps splash smooth
-requestAnimationFrame(()=>{
- rebuildPlayerGrid(false);
- applyTranslations();
-});
-// ── Patch: options button wiggle style injection ──
 (function(){
  const _s=document.createElement('style');
  _s.textContent=`
-/* === OPTIONS BUTTON WIGGLE (injected by patch) === */
+/* === BASE: every button gets instant scale-down on press === */
+/* will-change promotes to compositor layer — no layout/paint cost */
+button, .tgl, .genre-card, .player-row, .lang-opt, .vote-card,
+.menu-btn, .home-menu-btn, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
+  transform: scale(1);
+  transition: transform 0.07s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.07s ease,
+              filter 0.07s ease;
+}
+
+/* === PRESS STATE: instant visual response on pointerdown === */
+button:active, .tgl:active, .genre-card:active, .lang-opt:active,
+.vote-card:active, .menu-btn:active, .home-menu-btn:active,
+[role="button"]:active,
+button.ui-pressing, .tgl.ui-pressing, .genre-card.ui-pressing,
+.vote-card.ui-pressing, .menu-btn.ui-pressing, .home-menu-btn.ui-pressing {
+  transform: scale(0.91) !important;
+  filter: brightness(1.18) !important;
+  transition: transform 0.04s ease,
+              filter 0.04s ease !important;
+}
+
+/* === RIPPLE CONTAINER (overflow:hidden required on target) === */
+.ui-ripple-host { position: relative; overflow: hidden; }
+
+@keyframes _rippleOut {
+  0%   { transform: scale(0); opacity: 0.55; }
+  60%  { opacity: 0.3; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+._ripple-el {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: _rippleOut 0.38s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+/* === BOUNCE-BACK: after release, spring back with overshoot === */
+@keyframes _btnBounce {
+  0%   { transform: scale(0.91); }
+  55%  { transform: scale(1.055); }
+  78%  { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+.ui-bounce {
+  animation: _btnBounce 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards !important;
+  transition: none !important;
+}
+
+/* === OPTIONS BUTTON === */
 @keyframes optionsPulse {
   0%   { transform: rotate(0deg)   scale(1);    }
   10%  { transform: rotate(-8deg)  scale(1.07); }
@@ -549,4 +631,52 @@ requestAnimationFrame(()=>{
 }
 `;
  document.head.appendChild(_s);
+
+ // ── Ripple + bounce-back on every interactive element ──────────
+ // Uses pointerdown for instant response (no 300 ms click delay on mobile)
+ const _TARGETS='button,.tgl,.genre-card,.vote-card,.menu-btn,.home-menu-btn,.lang-opt,[role="button"]';
+
+ function _spawnRipple(el, x, y){
+  // Make sure element is a ripple host
+  const cs=getComputedStyle(el);
+  if(cs.position==='static') el.style.position='relative';
+  el.classList.add('ui-ripple-host');
+  const r=document.createElement('span');
+  r.className='_ripple-el';
+  const rect=el.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height)*1.4;
+  r.style.cssText=`width:${size}px;height:${size}px;left:${x-rect.left-size/2}px;top:${y-rect.top-size/2}px;`;
+  el.appendChild(r);
+  // Self-remove after animation
+  r.addEventListener('animationend',()=>{ if(r.parentNode) r.parentNode.removeChild(r); },{once:true,passive:true});
+ }
+
+ function _onDown(e){
+  const el=e.target.closest(_TARGETS);
+  if(!el||el.disabled) return;
+  el.classList.remove('ui-bounce');
+  el.classList.add('ui-pressing');
+  const cx=e.clientX||( e.touches&&e.touches[0]&&e.touches[0].clientX )||( el.getBoundingClientRect().left+el.offsetWidth/2 );
+  const cy=e.clientY||( e.touches&&e.touches[0]&&e.touches[0].clientY )||( el.getBoundingClientRect().top+el.offsetHeight/2 );
+  _spawnRipple(el, cx, cy);
+ }
+
+ function _onUp(e){
+  const el=e.target.closest(_TARGETS);
+  if(!el) return;
+  el.classList.remove('ui-pressing');
+  // Small delay so bounce starts after press-scale finishes (feels snappy not glitchy)
+  requestAnimationFrame(()=>{
+   el.classList.add('ui-bounce');
+   el.addEventListener('animationend',()=>el.classList.remove('ui-bounce'),{once:true,passive:true});
+  });
+ }
+
+ // Use capture so we catch events even if children stopPropagation
+ document.addEventListener('pointerdown', _onDown, {capture:true, passive:true});
+ document.addEventListener('pointerup',   _onUp,   {capture:true, passive:true});
+ document.addEventListener('pointercancel',function(e){
+  const el=e.target.closest(_TARGETS);
+  if(el){ el.classList.remove('ui-pressing'); el.classList.remove('ui-bounce'); }
+ },{capture:true,passive:true});
 })();

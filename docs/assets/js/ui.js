@@ -525,29 +525,37 @@ window.addEventListener('appinstalled',()=>{document.getElementById('install-ban
 // ════════════════════════════════════════════════════════════════
 // SPLASH + CLOSE LANG MENU ON OUTSIDE CLICK
 // ════════════════════════════════════════════════════════════════
-// Use double-rAF to detect first paint, then start the splash timer
-// from that moment — not from when all resources finish loading.
-// This eliminates the blank-screen lag before the splash appears.
-(function(){
- let _paintTime=0;
- function _afterFirstPaint(){
-  _paintTime=performance.now();
-  // Heavy init runs after splash is already visible on screen
-  rebuildPlayerGrid(false);
-  applyTranslations();
-  // Dismiss splash after 1400 ms from first paint (minimum feel-good delay)
-  const _remaining=Math.max(0, 1400-( performance.now()-_paintTime ));
-  setTimeout(()=>{
-   const s=document.getElementById('splash');
-   if(!s) return;
-   s.classList.add('hide');
-   setTimeout(()=>{ if(s.parentNode) s.parentNode.removeChild(s); },600);
-  }, _remaining);
- }
- // Double rAF = first callback is before paint, second is after
- requestAnimationFrame(()=>requestAnimationFrame(_afterFirstPaint));
-})();
+function _dismissSplash(){
+ const s=document.getElementById('splash');
+ if(!s) return;
+ s.classList.add('hide');
+ setTimeout(()=>{ if(s.parentNode) s.parentNode.removeChild(s); },600);
+}
+// Start 1400ms timer as early as possible (DOMContentLoaded fires long before load).
+// Fallback to window.load in case DOMContentLoaded already fired (script is deferred).
+// Whichever fires first wins — the flag prevents double-dismiss.
+var _splashTimerStarted=false;
+function _startSplashTimer(){
+ if(_splashTimerStarted) return;
+ _splashTimerStarted=true;
+ setTimeout(_dismissSplash, 1400);
+}
+if(document.readyState==='loading'){
+ document.addEventListener('DOMContentLoaded', _startSplashTimer);
+} else {
+ _startSplashTimer();
+}
+// Safety net: window.load will also call it (no-op if timer already started)
+window.addEventListener('load', _startSplashTimer);
 // lang dropdown click handling moved to toggleLangMenu block above
+
+// ════════════════════════════════════════════════════════════════
+// INIT — defer heavy work until after first paint
+// ════════════════════════════════════════════════════════════════
+requestAnimationFrame(()=>{
+ rebuildPlayerGrid(false);
+ applyTranslations();
+});
 
 // ════════════════════════════════════════════════════════════════
 // CLICK ANIMATION SYSTEM — GPU-composited, zero-delay, noticeable

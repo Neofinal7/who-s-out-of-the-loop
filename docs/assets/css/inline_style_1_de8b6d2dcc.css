@@ -515,6 +515,10 @@ button,.btn,.tgl,.menu-card,.genre-card,.vote-option,.gq-choice,.punish-opt,.gue
   }
 }
 
+/* Rules modal: instant open — no transition */
+#rules-modal.modal-overlay:not(.hidden){animation:none;}
+#rules-modal .modal-sheet{animation:none;}
+
 /* Desktop hover polish */
 @media (hover:hover){
   .btn:hover{transform:translateY(-2px);}

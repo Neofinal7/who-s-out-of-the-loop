@@ -922,6 +922,7 @@ function fireGameQuestion(){
  if(_timePressureInterval){
   clearInterval(_timePressureInterval);
   _timePressureInterval=null;
+  _timerGeneration++; // invalidate any in-flight tick
   _timerPaused=true;
  }
 
@@ -963,16 +964,19 @@ function answerGameQ(ans){
 let _timePressureInterval=null;
 let _timerPaused=false;
 let _timerSecsLeft=10;
+// Generation counter: incremented every time the timer is killed.
+// Each closure captures its own snapshot; stale closures self-abort.
+let _timerGeneration=0;
 
 function renderSpotlightQ(){
  releaseQuestionAdvanceLock();
  if(questionAdvanceRetryTimer){ clearTimeout(questionAdvanceRetryTimer); questionAdvanceRetryTimer=null; }
- if(_timePressureInterval){ clearInterval(_timePressureInterval); _timePressureInterval=null; }
+ if(_timePressureInterval){ clearInterval(_timePressureInterval); _timePressureInterval=null; _timerGeneration++; }
 
  const spot=document.getElementById('q-spotlight');
  if(currentQIdx>=questions.length){
   // Questions phase done — kill timer and clear active twist visuals
-  if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;}
+  if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;_timerGeneration++;}
   _timerPaused=false; _timerSecsLeft=10;
   activeTwist=null;
   spot.innerHTML=`<div style="text-align:center;padding:28px 0;">
@@ -1084,13 +1088,24 @@ function renderSpotlightQ(){
 
 function startTimerCountdown(){
  const circ=2*Math.PI*28;
+ // Snapshot generation so stale closures can self-abort
+ const myGen=_timerGeneration;
  let secs=_timerSecsLeft;
- const arc=document.getElementById('timer-arc');
- const num=document.getElementById('timer-num');
- if(num){num.textContent=secs;num.classList.remove('timer-urgent');}
+ // Prime the display immediately with fresh DOM refs
+ const _numPrime=document.getElementById('timer-num');
+ if(_numPrime){_numPrime.textContent=secs;_numPrime.classList.remove('timer-urgent');}
  _timePressureInterval=setInterval(()=>{
+  // Stale-closure guard: if generation changed, this tick belongs to
+  // a killed timer — stop immediately without any side-effects
+  if(_timerGeneration!==myGen){
+   clearInterval(_timePressureInterval);
+   return;
+  }
   secs--;
   _timerSecsLeft=secs;
+  // Always resolve DOM refs fresh — never use stale captures
+  const num=document.getElementById('timer-num');
+  const arc=document.getElementById('timer-arc');
   if(num) num.textContent=secs;
   if(arc) arc.style.strokeDashoffset=((10-secs)/10)*circ;
   if(secs<=3&&num) num.classList.add('timer-urgent');
@@ -1171,7 +1186,7 @@ function updateQRemain(n){ const el=document.getElementById('q-remain'); if(el) 
 // ════════════════════════════════════════════════════════════════
 function startVotePhase(){
  // Kill time_pressure timer when entering vote phase
- if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;}
+ if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;_timerGeneration++;}
  _timerPaused=false; _timerSecsLeft=10;
  votes={}; currentOpenVoter=0; openVoteOrder=[];
  const ar=T.dir==='rtl';
@@ -1328,7 +1343,7 @@ function buildVoteCounts(){
 function showReveal(){
  playSound('reveal'); haptic('heavy');
  // Kill time_pressure timer and clear mid-round twists on reveal
- if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;}
+ if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;_timerGeneration++;}
  _timerPaused=false; _timerSecsLeft=10;
  // Clear any lingering active twist (whisper_round, word_swap_mid, etc.)
  activeTwist=null;
@@ -1709,7 +1724,7 @@ function nextRound(){
  outsiderIdx=-1; topic=null; outsiderWord=null; currentIdx=0;
  votes={}; currentOpenVoter=0; openVoteOrder=[]; questions=[]; currentQIdx=0;
  storyIdx=-1; activeTwist=null; gameQuestionActive=false;
- if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;} _timerPaused=false; _timerSecsLeft=10;
+ if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;_timerGeneration++;} _timerPaused=false; _timerSecsLeft=10;
  twistFireAtQ=-1; twistFireAtQ2=-1; gameQFireAtQ=-1; twistFired=false; twist2Fired=false; gameQFired=false;
  roundEventCount=0;
  earlyVotePlayerIdx=-1; earlyVoteResult=-1; reverseVotePlayerIdx=-1; reverseVoteResult=-1;
@@ -1783,7 +1798,7 @@ function startNewMatch(){
  votes={}; currentOpenVoter=0; openVoteOrder=[]; questions=[]; currentQIdx=0;
  storyIdx=-1; roundScores={};
  twistFireAtQ=-1; twistFireAtQ2=-1; gameQFireAtQ=-1; twistFired=false; twist2Fired=false; gameQFired=false;
- if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;} _timerPaused=false; _timerSecsLeft=10;
+ if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;_timerGeneration++;} _timerPaused=false; _timerSecsLeft=10;
  earlyVotePlayerIdx=-1; earlyVoteResult=-1; reverseVotePlayerIdx=-1; reverseVoteResult=-1;
  lockedEarlyVotes={}; trustVoteLocks={};
  insiderSpyIdx=-1; twistWordSwapped=false; twistSwappedList=[];

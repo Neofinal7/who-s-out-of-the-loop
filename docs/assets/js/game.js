@@ -1276,10 +1276,18 @@ function showTally(){
     <div class="tally-name">${AVATARS[i%AVATARS.length]} ${players[i]}</div>
     <div class="tally-count">${T.voteCount(counts[i])}</div>
    </div>
-   <div class="tally-bg"><div class="tally-bar" style="width:${pct}%;background:${c};"></div></div>
+   <div class="tally-bg"><div class="tally-bar" data-pct="${pct}" style="width:0%;background:${c};"></div></div>
   </div>`;
  }).join('');
  show('s-tally');
+ // Animate bars: start at 0, set final width after two frames so transition fires
+ requestAnimationFrame(()=>{
+  requestAnimationFrame(()=>{
+   document.querySelectorAll('#tally-list .tally-bar').forEach(bar=>{
+    bar.style.width=(bar.dataset.pct||'0')+'%';
+   });
+  });
+ });
 }
 
 function buildVoteCounts(){
@@ -1578,39 +1586,7 @@ function submitGuess(encW,encCorrect,idx){
 // MICRO-MOTIVATORS
 // ════════════════════════════════════════════════════════════════
 function renderMicroRewards(){
- const wrap=document.getElementById('micro-rewards-wrap');
- const rewards=[];
- const sorted=Object.entries(roundScores).sort((a,b)=>b[1]-a[1]);
- const leader=sorted[0];
- const second=sorted[1];
-
- // Streak: someone won 2+ rounds in a row
- if(matchRoundHistory.length>=2){
-  const last2=matchRoundHistory.slice(-2);
-  // find if same player won both rounds
-  const wins={};
-  last2.forEach(r=>{ r.roundWinner&&(wins[r.roundWinner]=(wins[r.roundWinner]||0)+1); });
-  Object.entries(wins).forEach(([name,n])=>{
-   if(n>=2) rewards.push({cls:'mr-streak',text:T.motivStreak(n)});
-  });
- }
- // Comeback: last round leader is not this round's leader
- if(matchRoundHistory.length>=1){
-  const prev=matchRoundHistory[matchRoundHistory.length-1];
-  if(prev.roundWinner&&leader&&prev.roundWinner!==leader[0]){
-   rewards.push({cls:'mr-comeback',text:T.motivComeback});
-  }
- }
- // MVP: highest scorer this round
- if(leader&&leader[1]>0){
-  rewards.push({cls:'mr-mvp',text:T.motivMvp(leader[0])});
- }
- // Close call: top 2 within 5 pts
- if(second&&leader&&Math.abs(leader[1]-second[1])<=5&&second[1]>0){
-  rewards.push({cls:'mr-close',text:T.motivClose});
- }
-
- wrap.innerHTML=rewards.map(r=>`<div class="micro-reward ${r.cls}">${r.text}</div>`).join('');
+ // micro-reward badges removed — function kept for call-site compatibility
 }
 
 function showMotivator(text){
@@ -1872,4 +1848,3 @@ function clearHistory(){
   renderHistory();
  }
 }
-

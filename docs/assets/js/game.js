@@ -286,10 +286,10 @@ function firePreWordTwist(){
   showTwistScreen(
    '🕵️',
    ar?'عميل سري':'Secret Agent',
-   ar?`${players[insiderSpyIdx]} يحصل على معلومات سرية عند رؤية كلمته.`
-     :`${players[insiderSpyIdx]} will get secret intel on their private word screen.`,
+   ar?'لاعب واحد سيحصل على معلومات سرية عند رؤية كلمته — لكن بسرية تامة.'
+     :'One player will receive secret intel on their private word screen — privately.',
    `<div style="background:rgba(155,93,229,.1);border:2px solid var(--purple);border-radius:12px;padding:14px;margin-top:12px;text-align:center;font-size:14px;font-weight:700;color:var(--purple);">
-    🕵️ ${ar?'هذه المعلومة خاصة جداً':'This intel is private to one player'}
+    🕵️ ${ar?'المعلومة ستظهر لشخص واحد فقط — بدون ما أحد يعرف مين':'Only one player will see this — no one else knows who'}
    </div>`,
    ar
   );
@@ -336,10 +336,17 @@ function fireRandomTwist(){
  const id=midAvail[Math.floor(Math.random()*midAvail.length)];
  activeTwist={id};
 
- // reverse_vote fires at 50% — if we're not there yet, defer without consuming budget
- if(id==='reverse_vote'){
-  twistFireAtQ=Math.max(twistFireAtQ, Math.floor(questions.length*0.5));
-  if(currentQIdx<twistFireAtQ){ activeTwist=null; twistFired=false; renderSpotlightQ(); return; }
+ // reverse_vote fires at 50%+ — if we're not there yet, re-pick a different twist
+ if(id==='reverse_vote'&&currentQIdx<Math.floor(questions.length*0.5)){
+  // Remove reverse_vote from pool and re-pick so budget is not wasted
+  const _altPool=midAvail.filter(x=>x!=='reverse_vote');
+  if(_altPool.length===0){ activeTwist=null; renderSpotlightQ(); return; }
+  const _altId=_altPool[Math.floor(Math.random()*_altPool.length)];
+  activeTwist={id:_altId};
+  // Fall through with re-assigned id by re-calling (single re-try, no infinite loop)
+  activeTwist=null;
+  fireRandomTwist();
+  return;
  }
 
  let emoji='', title='', desc='', specificDesc='';
@@ -553,15 +560,21 @@ function showEarlyVoteScreen(type){
    ${isInsiderVote?`<div style="margin-top:10px;font-size:12px;font-weight:700;text-align:center;color:var(--blue);">${ar?'⚠️ تذكير: اللاعب اللي تثق فيه الآن، ما تقدر تصوّت ضده في التصويت النهائي':'⚠️ Reminder: You cannot vote against this trusted player in the final vote.'}</div>`:''}
   </div>`;
 
- // Keep the continue button visible as a safety fallback
+ // For forced_vote and surrender: HIDE the skip button — player must vote.
+ // For reverse_vote: keep a skip fallback (trust vote is less critical).
  const okBtn=document.getElementById('btn-twist-ok');
  if(okBtn){
   const _ar=T.dir==='rtl';
-  okBtn.textContent=_ar?'⏭ تخطي التصويت':'⏭ Skip vote';
-  okBtn.style.display='flex';
-  okBtn.style.opacity='0.55';
-  // If player presses it without voting, just resume questions
-  okBtn._earlyVoteSkip=true;
+  if(type==='reverse_vote'){
+   okBtn.textContent=_ar?'⏭ تخطي التصويت':'⏭ Skip vote';
+   okBtn.style.display='flex';
+   okBtn.style.opacity='0.55';
+   okBtn._earlyVoteSkip=true;
+  } else {
+   // forced_vote / surrender — must vote, no skip allowed
+   okBtn.style.display='none';
+   okBtn._earlyVoteSkip=false;
+  }
  }
  show('s-twist',true);
 }
@@ -596,6 +609,9 @@ function submitEarlyVote(type,targetIdx){
  // After 1.5s, clear the twist and return directly to questions
  setTimeout(()=>{
   activeTwist=null; // CRITICAL: clear so executeTwistAndContinue won't loop
+  // Restore OK button state for future use
+  const _okBtn=document.getElementById('btn-twist-ok');
+  if(_okBtn){ _okBtn.style.display='flex'; _okBtn.style.opacity=''; _okBtn._earlyVoteSkip=false; }
   renderSpotlightQ();
   show('s-questions');
  },1500);
@@ -955,6 +971,10 @@ function renderSpotlightQ(){
 
  const spot=document.getElementById('q-spotlight');
  if(currentQIdx>=questions.length){
+  // Questions phase done — kill timer and clear active twist visuals
+  if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;}
+  _timerPaused=false; _timerSecsLeft=10;
+  activeTwist=null;
   spot.innerHTML=`<div style="text-align:center;padding:28px 0;">
    <div style="font-size:46px;margin-bottom:10px;">✅</div>
    <div style="font-size:19px;font-weight:900;">${T.allDone}</div>
@@ -1150,6 +1170,9 @@ function updateQRemain(n){ const el=document.getElementById('q-remain'); if(el) 
 // VOTING
 // ════════════════════════════════════════════════════════════════
 function startVotePhase(){
+ // Kill time_pressure timer when entering vote phase
+ if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;}
+ _timerPaused=false; _timerSecsLeft=10;
  votes={}; currentOpenVoter=0; openVoteOrder=[];
  const ar=T.dir==='rtl';
 
@@ -1201,6 +1224,8 @@ function startVotePhase(){
  }
  renderOpenVote();
  document.getElementById('vote-total').textContent=openVoteOrder.length;
+ // Clear active mid-round twists now that voting has started
+ activeTwist=null;
  show('s-vote');
 }
 
@@ -1302,6 +1327,11 @@ function buildVoteCounts(){
 // ════════════════════════════════════════════════════════════════
 function showReveal(){
  playSound('reveal'); haptic('heavy');
+ // Kill time_pressure timer and clear mid-round twists on reveal
+ if(_timePressureInterval){clearInterval(_timePressureInterval);_timePressureInterval=null;}
+ _timerPaused=false; _timerSecsLeft=10;
+ // Clear any lingering active twist (whisper_round, word_swap_mid, etc.)
+ activeTwist=null;
  const counts=buildVoteCounts();
  const maxV=Math.max(...Object.values(counts));
  const topVoted=Object.keys(counts).filter(k=>counts[k]===maxV).map(Number);

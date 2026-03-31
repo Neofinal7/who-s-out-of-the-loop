@@ -170,7 +170,6 @@ function addPlayer(){
  if(count>=15){document.getElementById('add-player-btn').style.display='none';return;}
  playSound('add');haptic('light');
  appendPlayerRow(grid,count,'');
- grid.lastChild.querySelector('input').focus();
  updateCountLabel();
  if(count+1>=15)document.getElementById('add-player-btn').style.display='none';
 }

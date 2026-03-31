@@ -458,3 +458,143 @@
   #s-home > div[style*="height:44px"] { height: 36px !important; margin-bottom: 5px !important; }
   #s-home .menu-grid   { gap: 6px !important; }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   23. REVEAL SCREEN — remove gap above buttons now that
+       micro-reward badges are gone
+   ────────────────────────────────────────────────────────────── */
+
+#s-reveal #reveal-btn-row {
+  margin-top: 8px !important;
+  padding-top: 0 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   24. QUESTIONS SCREEN — compact q-spot card so screen fits
+       without scrolling. Reduces padding, font sizes, and
+       spacing inside the card while keeping it readable.
+   ────────────────────────────────────────────────────────────── */
+
+/* Screen itself: no overflow, tight padding, column layout */
+#s-questions {
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding-top: calc(8px + var(--safe-top)) !important;
+  padding-bottom: calc(8px + var(--safe-bot)) !important;
+  gap: 0 !important;
+}
+
+/* Topbar */
+#s-questions .topbar {
+  margin-bottom: 4px !important;
+}
+
+/* Header text — tighter */
+#s-questions .phase-title {
+  font-size: 19px !important;
+  margin-bottom: 1px !important;
+}
+#s-questions .phase-sub {
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  margin-bottom: 6px !important;
+}
+
+/* Spotlight container — shrinks to card size, no dead space */
+#q-spotlight {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+/* ── The card itself ── */
+.q-spot {
+  padding: 12px 16px !important;   /* was 26px 20px */
+}
+
+/* Question number badge */
+.q-num {
+  font-size: 10px !important;
+  padding: 3px 10px !important;
+  margin-bottom: 6px !important;
+}
+
+/* Asker avatar emoji */
+.q-asker {
+  font-size: 32px !important;
+  margin-bottom: 1px !important;
+}
+
+/* Asker name */
+.q-name {
+  font-size: 19px !important;
+  margin-bottom: 3px !important;
+}
+
+/* Arrow between asker and target */
+.q-arrow {
+  font-size: 18px !important;
+  margin: 3px 0 !important;
+}
+
+/* Target avatar emoji */
+.q-target-av {
+  font-size: 26px !important;
+  margin-bottom: 1px !important;
+}
+
+/* Target name */
+.q-target-name {
+  font-size: 15px !important;
+}
+
+/* Progress dots row */
+.q-dots {
+  margin-top: 8px !important;
+  gap: 5px !important;
+}
+.q-dot {
+  width: 7px !important;
+  height: 7px !important;
+}
+.q-dot.active {
+  width: 16px !important;
+}
+
+/* Timer ring: scale down */
+.timer-ring {
+  width: 54px !important;
+  height: 54px !important;
+  margin-bottom: 6px !important;
+}
+.timer-ring svg {
+  width: 54px !important;
+  height: 54px !important;
+}
+.timer-num {
+  font-size: 19px !important;
+}
+
+/* Done/Skip buttons row — sits right below the card */
+#s-questions > div[style*="display:flex"] {
+  margin-top: 10px !important;
+  padding-top: 0 !important;
+  gap: 7px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Vote button — right below done/skip */
+#s-questions #btn-done-questions {
+  margin-top: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+/* All buttons slightly shorter */
+#s-questions .btn {
+  padding: 12px 16px !important;
+  font-size: 15px !important;
+}

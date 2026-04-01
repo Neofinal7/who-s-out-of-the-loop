@@ -119,6 +119,10 @@
       { rot: 0, drift: 0, scale: 1, offset: 1 },
     ],
   };
+  const isCoarsePointer = window.matchMedia && window.matchMedia('(hover: none)').matches;
+  if (isCoarsePointer && CFG.maxConcurrentWiggles) {
+    CFG.maxConcurrentWiggles = Math.min(CFG.maxConcurrentWiggles, 4);
+  }
 
   // ── 3. Selectors ─────────────────────────────────────────────
   const HOME_CARD_SEL = '#s-home .menu-grid > div';

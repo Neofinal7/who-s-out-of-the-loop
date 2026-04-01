@@ -112,7 +112,8 @@
   .gq-choice::after,
   .punish-opt::after,
   .guess-opt::after {
-    animation-duration: 8s;
+    animation-duration: 9s;
+    animation-timing-function: steps(12, end);
     filter: none;
     opacity: 0.35;
   }
@@ -127,12 +128,4 @@
   animation-duration: 5.2s;
   z-index: 2;
 }
-
-
-
-
-
-
-
-
 

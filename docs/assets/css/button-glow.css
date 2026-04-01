@@ -113,7 +113,7 @@
   .punish-opt::after,
   .guess-opt::after {
     animation-duration: 9s;
-    animation-timing-function: steps(12, end);
+    animation-timing-function: linear;
     filter: none;
     opacity: 0.35;
   }

@@ -54,13 +54,15 @@
     document.head.appendChild(style);
   }
 
-  // ── 2. Configuration ─────────────────────────────────────────
+  // ── 2. Configuration ─────────────────────────────────────────
+
+
   const CFG = {
     // How long a button must be idle before its wiggle starts (ms)
     idleDelay: 600,
     // Max random extra idle delay so buttons don't all wiggle together (ms)
     idleJitter: 400,
-    // How long between wiggle cycles (ms) � time at rest between animations
+    // How long between wiggle cycles (ms)   time at rest between animations
     repeatInterval: 1400,
     repeatJitter: 600,
     // Duration of one wiggle animation (ms)
@@ -78,7 +80,11 @@
     forceAnimation: false,
     // Respect prefers-reduced-motion (set to false to force wiggle anyway)
     respectReducedMotion: false,
-  };
+    // Limit concurrent wiggles to keep FPS smooth (mobile perf)
+    maxConcurrentWiggles: 6,
+  };
+
+
   const KEYFRAMES = {
     wiggleSoft: [
       { rot: 0, drift: 0, scale: 1, offset: 0 },
@@ -241,7 +247,8 @@
       if (!document.contains(el)) return;
       // Bail if screen is not active or element invisible
       if (!isInActiveScreen(el) || !isVisible(el)) {
-        // Retry after a pause � screen may become active later
+        // Retry after a pause   screen may become active later
+        _activeWiggles.delete(el);
         el._wiggleTimer = setTimeout(tick, rand(CFG.repeatInterval, CFG.repeatJitter));
         return;
       }
@@ -250,6 +257,13 @@
         el._wiggleTimer = setTimeout(tick, 400);
         return;
       }
+
+      if (CFG.maxConcurrentWiggles && _activeWiggles.size >= CFG.maxConcurrentWiggles && !_activeWiggles.has(el)) {
+        el._wiggleTimer = setTimeout(tick, 260);
+        return;
+      }
+
+      _activeWiggles.add(el);
 
       const usingWAAPI = CFG.useWebAnimations && typeof target.animate === 'function';
       const profile = getWiggleProfile(el);
@@ -267,7 +281,7 @@
         });
         target._wiggleAnim = anim;
         anim.onfinish = () => {
-          if (target._wiggleAnim === anim) target._wiggleAnim = null;
+          if (target._wiggleAnim === anim) target._wiggleAnim = null; _activeWiggles.delete(el);
         };
       } else {
         const animValue = `${keyframe} ${durationMs}ms ${CFG.easing} both`;
@@ -300,6 +314,7 @@
             }
           }
         }
+        _activeWiggles.delete(el);
         el._wiggleTimer = setTimeout(tick, rand(CFG.repeatInterval, CFG.repeatJitter));
       }, duration + 40);
 
@@ -362,6 +377,7 @@
 
   // ── 7. Register an element ────────────────────────────────────
   const _registered = new WeakSet();
+  const _activeWiggles = new Set();
 
   function register(el, keyframe, duration) {
     if (_registered.has(el)) return;
@@ -400,7 +416,7 @@
   // ── 10. Reduce motion: respect user preference ────────────────
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (CFG.respectReducedMotion && reducedMotion.matches) {
-    // Don't start anything � user asked for reduced motion
+    // Don't start anything   user asked for reduced motion
     observer.disconnect();
     return;
   }
@@ -414,50 +430,3 @@
   setTimeout(registerAll, 350);
 
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

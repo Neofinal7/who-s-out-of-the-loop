@@ -1,0 +1,97 @@
+﻿:root {
+  --glow-pink: 255, 88, 173;
+  --glow-blue: 90, 170, 255;
+  --glow-green: 90, 230, 140;
+  --glow-red: 255, 80, 110;
+  --glow-orange: 255, 150, 80;
+  --glow-yellow: 255, 215, 90;
+  --glow-purple: 140, 200, 120;
+  --glow-neutral: 255, 255, 255;
+}
+
+@keyframes glowSweep {
+  0% { transform: translateX(-130%); opacity: 0.0; }
+  15% { opacity: 0.28; }
+  50% { opacity: 0.35; }
+  85% { opacity: 0.18; }
+  100% { transform: translateX(130%); opacity: 0.0; }
+}
+
+.btn,
+.tgl,
+.btn-add-player,
+.lang-btn,
+.menu-grid > div,
+.genre-card,
+.vote-option,
+.gq-choice,
+.punish-opt,
+.guess-opt {
+  --glow-rgb: var(--glow-neutral);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 7px rgba(var(--glow-rgb), 0.18);
+}
+
+.btn::after,
+.tgl::after,
+.btn-add-player::after,
+.lang-btn::after,
+.menu-grid > div::after,
+.genre-card::after,
+.vote-option::after,
+.gq-choice::after,
+.punish-opt::after,
+.guess-opt::after {
+  content: '';
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(110deg,
+    transparent 35%,
+    rgba(var(--glow-rgb), 0.55) 50%,
+    transparent 65%);
+  transform: translateX(-130%);
+  animation: glowSweep 5.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+  filter: blur(0.6px);
+}
+
+.btn-pink { --glow-rgb: var(--glow-pink); }
+.btn-blue { --glow-rgb: var(--glow-blue); }
+.btn-green { --glow-rgb: var(--glow-green); }
+.btn-red { --glow-rgb: var(--glow-red); }
+.btn-orange { --glow-rgb: var(--glow-orange); }
+.btn-yellow { --glow-rgb: var(--glow-yellow); }
+.btn-purple { --glow-rgb: var(--glow-green); }
+.btn-ghost { --glow-rgb: var(--glow-neutral); }
+
+.lang-btn { --glow-rgb: var(--glow-blue); }
+.btn-add-player { --glow-rgb: var(--glow-pink); }
+.tgl { --glow-rgb: var(--glow-blue); }
+.genre-card { --glow-rgb: var(--glow-green); }
+.vote-option { --glow-rgb: var(--glow-orange); }
+.gq-choice { --glow-rgb: var(--glow-yellow); }
+.punish-opt { --glow-rgb: var(--glow-red); }
+.guess-opt { --glow-rgb: var(--glow-purple); }
+
+/* Offset animations slightly by type so they don't all sweep together */
+.btn::after { animation-delay: -1.2s; }
+.tgl::after { animation-delay: -2.8s; }
+.btn-add-player::after { animation-delay: -3.6s; }
+.lang-btn::after { animation-delay: -4.4s; }
+.menu-grid > div::after { animation-delay: -0.6s; }
+.genre-card::after { animation-delay: -5.2s; }
+.vote-option::after { animation-delay: -2.0s; }
+.gq-choice::after { animation-delay: -3.0s; }
+.punish-opt::after { animation-delay: -1.6s; }
+.guess-opt::after { animation-delay: -2.4s; }
+
+/* Home menu cards slightly stronger */
+.menu-grid > div {
+  box-shadow: 0 0 10px rgba(var(--glow-rgb), 0.24);
+}
+.menu-grid > div::after {
+  opacity: 0.6;
+  animation-duration: 5.2s;
+}

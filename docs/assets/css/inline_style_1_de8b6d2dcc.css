@@ -834,25 +834,3 @@ button.ui-pressing,
   }
   #party-particles{opacity:.95 !important;}
 }
-
-/* Mobile menu fix for your JS-driven menus */
-@media (max-width: 600px) {
-  .screen .menu-row {
-    flex-direction: column !important; /* stack menu items on mobile */
-    gap: 8px !important;
-  }
-
-  .menu-item {
-    padding: 8px 12px !important;
-    font-size: 14px !important;
-    word-break: break-word !important;
-  }
-}
-
-html[dir="rtl"] .screen .menu-row {
-  flex-direction: column-reverse !important;
-}
-
-html[dir="rtl"] .menu-item {
-  text-align: right !important;
-}

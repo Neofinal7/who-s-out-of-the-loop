@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Aref+Ruqaa:wght@400;700&family=Felipa:wght@400&display=swap');
+
 :root{
  --bg:#0A2F0A;
  --bg2:#0A2F0A;
@@ -34,19 +35,35 @@
 
 /* ══ CUSTOM FONTS ════════════════════════════════════════════════ */
 /* ArefRuqaa for Arabic display text — big titles, names, words */
+/* NOTE: letter-spacing removed for Arabic — it breaks connected letters and kills performance */
 :lang(ar) .hero-title,
-.hero-title,
-.cover-name,
-.word-huge,
-.reveal-name,
-.mw-name,
-.setup-title,
-.phase-title,
-.q-name,
-.q-target-name,
-.outsider-title,
-.spl-title {
-  font-family: 'ArefRuqaa', 'Cairo', sans-serif;
+:lang(ar) .cover-name,
+:lang(ar) .word-huge,
+:lang(ar) .reveal-name,
+:lang(ar) .mw-name,
+:lang(ar) .setup-title,
+:lang(ar) .phase-title,
+:lang(ar) .q-name,
+:lang(ar) .q-target-name,
+:lang(ar) .outsider-title,
+:lang(ar) .spl-title {
+  font-family: 'Aref Ruqaa', 'Cairo', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0; /* Arabic must have 0 letter-spacing for performance */
+}
+/* English text can have letter-spacing */
+:lang(en) .hero-title,
+:lang(en) .cover-name,
+:lang(en) .word-huge,
+:lang(en) .reveal-name,
+:lang(en) .mw-name,
+:lang(en) .setup-title,
+:lang(en) .phase-title,
+:lang(en) .q-name,
+:lang(en) .q-target-name,
+:lang(en) .outsider-title,
+:lang(en) .spl-title {
+  font-family: 'Aref Ruqaa', 'Cairo', sans-serif;
   font-weight: 400;
   letter-spacing: 1px;
 }
@@ -266,10 +283,32 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .cover-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:11px;}
 .cover-avatar{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:58px;background:linear-gradient(135deg,var(--surface2),var(--surface3));border:3px solid rgba(61,220,90,.6);box-shadow:0 0 24px rgba(78,255,106,.6);animation:avatarBounce 2.5s ease-in-out infinite;margin-bottom:8px;will-change:transform;}
 .cover-name{font-size:42px;font-weight:900;background:linear-gradient(135deg,var(--pink),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+/* Disable gradient text on mobile for Arabic performance */
+@media (hover:none){
+  .cover-name{
+    background:none;
+    -webkit-background-clip:unset;
+    -webkit-text-fill-color:unset;
+    background-clip:unset;
+    color:var(--pinkL);
+    text-shadow:0 0 20px rgba(255,92,160,.5);
+  }
+}
 .cover-sub{font-size:14px;color:var(--muted);max-width:280px;line-height:1.8;}
 .cover-warning{background:linear-gradient(135deg,rgba(255,214,0,.15),rgba(255,107,26,.1));border:1.5px solid rgba(255,214,0,.4);color:var(--yellowL);font-size:13px;font-weight:700;padding:10px 20px;border-radius:30px;margin-top:8px;box-shadow:0 0 16px rgba(255,214,0,.2);}
 .word-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 12px;}
 .word-huge{font-size:56px;font-weight:900;line-height:1.05;margin-bottom:16px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);background:linear-gradient(135deg,#fff,var(--blueL),var(--pinkL));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+/* Disable gradient text on mobile for performance — solid color is 10x faster */
+@media (hover:none){
+  .word-huge{
+    background:none;
+    -webkit-background-clip:unset;
+    -webkit-text-fill-color:unset;
+    background-clip:unset;
+    color:#fff;
+    text-shadow:0 2px 20px rgba(0,229,255,.5),0 0 40px rgba(255,92,160,.4);
+  }
+}
 .word-hint{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:36px;max-width:280px;}
 .outsider-card{background:linear-gradient(135deg,#1a0020,#2d0035,#1a0020);border:2px solid rgba(255,23,68,.4);border-radius:var(--r);padding:30px 24px;text-align:center;margin-bottom:20px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 40px rgba(255,23,68,.25),inset 0 1px 0 rgba(255,255,255,.08);}
 .outsider-emoji{font-size:56px;margin-bottom:12px;display:block;}
@@ -567,8 +606,13 @@ button,.btn,.tgl,.menu-card,.genre-card,.vote-option,.gq-choice,.punish-opt,.gue
   /* Kill ALL continuous/looping animations on mobile */
   .hero-emoji,.cover-avatar,.match-crown,.hot-badge,.hl,
   .menu-card.story-card::before,.twist-banner::before,.twist-banner::after,
-  .spl-dot,.story-card::before{
+  .spl-dot,.story-card::before,
+  .party-particle,.blob{
     animation:none !important;
+  }
+  /* Hide particle layer entirely on mobile — major GPU savings */
+  #party-particles,.splash-particles{
+    display:none !important;
   }
   /* Keep entry animations (one-shot) but make them snappier */
   .screen.active{animation:none;}

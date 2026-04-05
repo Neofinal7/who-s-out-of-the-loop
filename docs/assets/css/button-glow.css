@@ -1,0 +1,232 @@
+:root {
+  --glow-pink: 255, 88, 173;
+  --glow-blue: 90, 170, 255;
+  --glow-green: 90, 230, 140;
+  --glow-red: 255, 80, 110;
+  --glow-orange: 255, 150, 80;
+  --glow-yellow: 255, 215, 90;
+  --glow-purple: 140, 200, 120;
+  --glow-neutral: 255, 255, 255;
+}
+
+@keyframes glowSweep {
+  0% {
+    transform: translate3d(-132%, 0, 0);
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 0.34;
+  }
+  84% {
+    opacity: 0.12;
+  }
+  100% {
+    transform: translate3d(132%, 0, 0);
+    opacity: 0;
+  }
+}
+
+.btn,
+.tgl,
+.btn-add-player,
+.lang-btn,
+.menu-grid > div,
+.genre-card,
+.vote-option,
+.gq-choice,
+.punish-opt,
+.guess-opt {
+  --glow-rgb: var(--glow-neutral);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  contain: paint;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  box-shadow: 0 0 5px rgba(var(--glow-rgb), 0.14);
+}
+
+.btn::after,
+.tgl::after,
+.btn-add-player::after,
+.lang-btn::after,
+.menu-grid > div::after,
+.genre-card::after,
+.vote-option::after,
+.gq-choice::after,
+.punish-opt::after,
+.guess-opt::after {
+  content: '';
+  position: absolute;
+  inset: 0 -46%;
+  background:
+    radial-gradient(
+      92% 58% at 50% 20%,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.08) 26%,
+      rgba(255, 255, 255, 0) 68%
+    ),
+    radial-gradient(
+      88% 64% at 50% 80%,
+      rgba(var(--glow-rgb), 0.14) 0%,
+      rgba(var(--glow-rgb), 0.06) 28%,
+      rgba(var(--glow-rgb), 0) 70%
+    ),
+    linear-gradient(
+      110deg,
+      transparent 33%,
+      rgba(var(--glow-rgb), 0.03) 39%,
+      rgba(var(--glow-rgb), 0.11) 44%,
+      rgba(255, 255, 255, 0.24) 50%,
+      rgba(var(--glow-rgb), 0.13) 56%,
+      rgba(var(--glow-rgb), 0.03) 61%,
+      transparent 67%
+    );
+  transform: translate3d(-132%, 0, 0) rotate(-8deg) skewX(-6deg) scaleY(1.34);
+  animation: glowSweep 7.2s linear infinite;
+  opacity: 0.82;
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.screen:not(.active) .btn::after,
+.screen:not(.active) .tgl::after,
+.screen:not(.active) .btn-add-player::after,
+.screen:not(.active) .lang-btn::after,
+.screen:not(.active) .menu-grid > div::after,
+.screen:not(.active) .genre-card::after,
+.screen:not(.active) .vote-option::after,
+.screen:not(.active) .gq-choice::after,
+.screen:not(.active) .punish-opt::after,
+.screen:not(.active) .guess-opt::after,
+.modal-overlay.hidden .btn::after,
+.modal-overlay.hidden .tgl::after,
+.modal-overlay.hidden .btn-add-player::after,
+.modal-overlay.hidden .lang-btn::after,
+.modal-overlay.hidden .menu-grid > div::after,
+.modal-overlay.hidden .genre-card::after,
+.modal-overlay.hidden .vote-option::after,
+.modal-overlay.hidden .gq-choice::after,
+.modal-overlay.hidden .punish-opt::after,
+.modal-overlay.hidden .guess-opt::after {
+  animation-play-state: paused !important;
+  opacity: 0 !important;
+}
+
+.btn-pink {
+  --glow-rgb: var(--glow-pink);
+}
+
+.btn-blue {
+  --glow-rgb: var(--glow-blue);
+}
+
+.btn-green {
+  --glow-rgb: var(--glow-green);
+}
+
+.btn-red {
+  --glow-rgb: var(--glow-red);
+}
+
+.btn-orange {
+  --glow-rgb: var(--glow-orange);
+}
+
+.btn-yellow {
+  --glow-rgb: var(--glow-yellow);
+}
+
+.btn-purple {
+  --glow-rgb: var(--glow-green);
+}
+
+.btn-ghost {
+  --glow-rgb: var(--glow-neutral);
+}
+
+.lang-btn {
+  --glow-rgb: var(--glow-blue);
+}
+
+.btn-add-player {
+  --glow-rgb: var(--glow-pink);
+}
+
+.tgl {
+  --glow-rgb: var(--glow-blue);
+}
+
+.genre-card {
+  --glow-rgb: var(--glow-green);
+}
+
+.vote-option {
+  --glow-rgb: var(--glow-orange);
+}
+
+.gq-choice {
+  --glow-rgb: var(--glow-yellow);
+}
+
+.punish-opt {
+  --glow-rgb: var(--glow-red);
+}
+
+.guess-opt {
+  --glow-rgb: var(--glow-purple);
+}
+
+.btn::after {
+  animation-delay: -1.2s;
+}
+
+.tgl::after {
+  animation-delay: -2.8s;
+}
+
+.btn-add-player::after {
+  animation-delay: -3.6s;
+}
+
+.lang-btn::after {
+  animation-delay: -4.4s;
+}
+
+.menu-grid > div::after {
+  animation-delay: -0.6s;
+}
+
+.genre-card::after {
+  animation-delay: -5.2s;
+}
+
+.vote-option::after {
+  animation-delay: -2s;
+}
+
+.gq-choice::after {
+  animation-delay: -3s;
+}
+
+.punish-opt::after {
+  animation-delay: -1.6s;
+}
+
+.guess-opt::after {
+  animation-delay: -2.4s;
+}
+
+.menu-grid > div {
+  box-shadow: 0 0 8px rgba(var(--glow-rgb), 0.18);
+}
+
+.menu-grid > div::after {
+  animation-duration: 6.6s;
+  opacity: 0.92;
+}

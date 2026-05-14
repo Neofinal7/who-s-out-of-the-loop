@@ -1,0 +1,118 @@
+001 | Pizza <> Pie
+002 | Burger <> Hot Dog
+003 | Sushi <> Ramen
+004 | Falafel <> Soccer Ball
+005 | Grilled Chicken <> Bicycle
+006 | Taco <> Giraffe
+007 | Pasta <> Snake
+008 | Steak <> Volcano
+009 | Chicken Wrap <> Burger
+010 | Curry <> Horse
+011 | Tiramisu <> Profiterole
+012 | Cupcake <> Muffin
+013 | Donut <> Saturn
+014 | Chocolate <> Caramel
+015 | Ice Cream <> Gelato
+016 | Waffle <> Pancake
+017 | Strawberry Cake <> Submarine
+018 | Lollipop <> Tornado
+019 | Donut <> Spacecraft
+020 | Brownie <> Mini Donuts
+021 | Cappuccino <> Latte
+022 | Bubble Tea <> Milk Tea
+023 | Green Tea <> Black Tea
+024 | Smoothie <> Unicorn
+025 | Lemonade <> Volcano
+026 | Watermelon Juice <> Robot
+027 | Milk Tea <> Tiger
+028 | Japan <> Piano
+029 | Australia <> New Zealand
+030 | Brazil <> Argentina
+031 | China <> Japan
+032 | South Korea <> Taiwan
+033 | India <> Pakistan
+034 | Turkey <> Greece
+035 | Saudi Arabia <> UAE
+036 | New York <> Los Angeles
+037 | Paris <> Berlin
+038 | Tokyo <> Seoul
+039 | Dubai <> Abu Dhabi
+040 | London <> Manchester
+041 | Rome <> Athens
+042 | Riyadh <> Jeddah
+043 | Seoul <> Tokyo
+044 | Salad <> Cake
+045 | Sandwich <> Fork
+046 | Grilled Meat <> Mushroom
+047 | Candy <> Pistachio
+048 | Croissant <> Cookie
+049 | Milk <> Black Coffee
+050 | Orange Juice <> Iced Tea
+051 | Table Tennis <> Bowling
+052 | Fencing <> Karate
+053 | Engineer <> Teacher
+054 | Actor <> Film Director
+055 | Wolf <> Arctic Fox
+056 | Eagle <> Falcon
+057 | Printer <> Scanner
+058 | Satellite <> Radar
+059 | River <> Lake
+060 | Mountain <> Valley
+061 | Italy <> Spain
+062 | France <> Germany
+063 | Istanbul <> Ankara
+064 | Singapore <> Kuala Lumpur
+065 | Fried Egg <> Omelette
+066 | Broth <> Stew
+067 | Cheese <> Butter
+068 | Crème Brûlée <> Pudding
+069 | Mate <> Kombucha
+070 | Chocolate Milkshake <> Mint Lemonade
+071 | Sloth <> Chimpanzee
+072 | Flamingo <> Peacock
+073 | Crocodile <> Lizard
+074 | Surfing <> Waterskiing
+075 | Mountain Climbing <> Bouldering
+076 | Firefighter <> Lifeguard
+077 | Professor <> Counselor
+078 | Desktop Computer <> Monitor
+079 | Keyboard <> Mouse
+080 | Rainforest <> Jungle
+081 | Rock <> Cave
+082 | Mexico <> Colombia
+083 | Egypt <> Morocco
+084 | Beirut <> Amman
+085 | Lion <> Tiger
+086 | Elephant <> Hippopotamus
+087 | Giraffe <> Buffalo
+088 | Penguin <> Seal
+089 | Fox <> Wolf
+090 | Dolphin <> Whale
+091 | Parrot <> Toucan
+092 | Shark <> Sawfish
+093 | Soccer <> Rugby
+094 | Basketball <> Volleyball
+095 | Tennis <> Badminton
+096 | Swimming <> Diving
+097 | Boxing <> MMA
+098 | Weightlifting <> Judo
+099 | Gymnastics <> Rhythmic Gymnastics
+100 | Doctor <> Pharmacist
+101 | Programmer <> Graphic Designer
+102 | Chef <> Baker
+103 | Astronaut <> Pilot
+104 | Detective <> Lawyer
+105 | Artist <> Musician
+106 | Volcano <> Earthquake
+107 | Tsunami Wave <> Hurricane
+108 | Rainbow <> Northern Lights
+109 | Lightning <> Thunder
+110 | Desert <> Oasis
+111 | Moon <> Sun
+112 | iPhone <> Android
+113 | PlayStation <> Xbox
+114 | Robot <> Artificial Intelligence
+115 | Laptop <> Tablet
+116 | Drone <> Helicopter
+117 | Artificial Intelligence <> Robot
+118 | Headphones <> Speaker
